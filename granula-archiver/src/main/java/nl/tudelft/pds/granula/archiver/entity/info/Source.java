@@ -18,9 +18,16 @@ package nl.tudelft.pds.granula.archiver.entity.info;
 
 import nl.tudelft.pds.granula.archiver.entity.Archivable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 /**
  * Created by wing on 26-2-15.
  */
+
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlSeeAlso({InfoSource.class, RecordSource.class})
 public abstract class Source extends Archivable {
 
 }

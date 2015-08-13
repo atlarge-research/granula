@@ -16,14 +16,16 @@
 
 package nl.tudelft.pds.granula.modeller.giraph.job;
 
+import nl.tudelft.pds.granula.archiver.entity.info.BasicInfo;
 import nl.tudelft.pds.granula.archiver.entity.info.Info;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
 import nl.tudelft.pds.granula.archiver.entity.operation.Job;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
-import nl.tudelft.pds.granula.modeller.fundamental.model.job.JobModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.DerivationRule;
+import nl.tudelft.pds.granula.modeller.model.job.JobModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.DerivationRule;
 import nl.tudelft.pds.granula.modeller.giraph.operation.*;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
+import nl.tudelft.pds.granula.modeller.rule.extraction.GiraphExtractionRule;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,9 +74,10 @@ public class Giraph extends JobModel {
     }
 
     public void loadRules() {
-        super.loadRules();
         addInfoDerivation(new JobNameDerivationRule(2));
+        addExtraction(new GiraphExtractionRule(1));
     }
+
 
 
     protected class JobNameDerivationRule extends DerivationRule {
@@ -86,45 +89,49 @@ public class Giraph extends JobModel {
         @Override
         public boolean execute() {
 
-                Job job = (Job) entity;
+            Job job = (Job) entity;
 
-                Operation bspIteration = null;
-                Operation containerAssignment = null;
-                for(Operation operation: job.getTopOperation().getChildren()) {
-                    if(operation.hasType(GiraphType.AppMaster, GiraphType.BspExecution)) {
-                        for (Operation suboperation : operation.getChildren()) {
-                            if (suboperation.hasType(GiraphType.BspMaster, GiraphType.BspIteration)) {
-                                bspIteration = suboperation;
-                            }
+            Operation bspIteration = null;
+            Operation containerAssignment = null;
+            for (Operation operation : job.getTopOperation().getChildren()) {
+                if (operation.hasType(GiraphType.AppMaster, GiraphType.BspExecution)) {
+                    for (Operation suboperation : operation.getChildren()) {
+                        if (suboperation.hasType(GiraphType.BspMaster, GiraphType.BspIteration)) {
+                            bspIteration = suboperation;
                         }
                     }
                 }
-                for(Operation operation: job.getTopOperation().getChildren()) {
-                    if(operation.hasType(GiraphType.AppMaster, GiraphType.Deployment)) {
-                        for (Operation suboperation : operation.getChildren()) {
-                            if(suboperation.hasType(GiraphType.AppMaster, GiraphType.ContainerAssignment)) {
-                                containerAssignment = suboperation;
-                            }
+            }
+            for (Operation operation : job.getTopOperation().getChildren()) {
+                if (operation.hasType(GiraphType.AppMaster, GiraphType.Deployment)) {
+                    for (Operation suboperation : operation.getChildren()) {
+                        if (suboperation.hasType(GiraphType.AppMaster, GiraphType.ContainerAssignment)) {
+                            containerAssignment = suboperation;
                         }
                     }
                 }
+            }
 
-                Info numContainers = containerAssignment.getInfo("NumContainers");
-                Info containerHeapSize = containerAssignment.getInfo("ContainerHeapSize");
+            Info numContainers = containerAssignment.getInfo("NumContainers");
+            Info containerHeapSize = containerAssignment.getInfo("ContainerHeapSize");
 
-                Info computeClass = bspIteration.getInfo("ComputationClass");
-                Info dataInputPath = bspIteration.getInfo("DataInputPath");
+            Info computeClass = bspIteration.getInfo("ComputationClass");
+            Info dataInputPath = bspIteration.getInfo("DataInputPath");
 
-                String fileName = new File(dataInputPath.getValue()).getName();
+            String fileName = new File(dataInputPath.getValue()).getName();
 
-                String jobName = String.format("Job[%s-%s, %sx%sMB]",
-                        computeClass.getValue().replace("Computation", ""), fileName,
-                        numContainers.getValue(), containerHeapSize.getValue());
+            String jobName = String.format("%s-%s, %sx%sMB",
+                    computeClass.getValue().replace("Computation", ""), fileName,
+                    numContainers.getValue(), containerHeapSize.getValue());
 
-                Info jobNameInfo = new Info("JobName");
-                jobNameInfo.addInfo(jobName, new ArrayList<Source>());
-                job.addInfo(jobNameInfo);
-                return  true;
+            BasicInfo jobNameInfo = new BasicInfo("JobName");
+            jobNameInfo.addInfo(jobName, new ArrayList<Source>());
+            job.addInfo(jobNameInfo);
+
+            job.setName(jobName);
+            job.setType("Giraph");
+
+            return true;
 
         }
     }

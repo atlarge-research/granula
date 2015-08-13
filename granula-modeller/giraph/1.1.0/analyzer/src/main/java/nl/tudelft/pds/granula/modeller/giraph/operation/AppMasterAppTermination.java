@@ -19,12 +19,12 @@ package nl.tudelft.pds.granula.modeller.giraph.operation;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
 import nl.tudelft.pds.granula.archiver.entity.info.SummaryInfo;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
-import nl.tudelft.pds.granula.modeller.fundamental.model.operation.ConcreteOperationModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.BasicSummaryDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.ColorDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.RecordInfoDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.MainInfoTableVisualization;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.linking.UniqueParentLinking;
+import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.ColorDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.RecordInfoDerivation;
+import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 
 import java.util.ArrayList;
@@ -40,12 +40,12 @@ public class    AppMasterAppTermination extends ConcreteOperationModel {
 
         addLinkingRule(new UniqueParentLinking(GiraphType.AppMaster, GiraphType.Undeployment));
 
-        addInfoDerivation(new RecordInfoDerivation(1, "ResponseTime"));
+//        addInfoDerivation(new RecordInfoDerivation(1, "ResponseTime"));
         addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
         addInfoDerivation(new SummaryDerivation(10));
         addVisualDerivation(new MainInfoTableVisualization(1,
                 new ArrayList<String>() {{
-                    add("ResponseTime");
+//                    add("ResponseTime");
                 }}));
     }
 

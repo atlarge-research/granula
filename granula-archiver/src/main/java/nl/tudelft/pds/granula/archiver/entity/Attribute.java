@@ -18,11 +18,20 @@ package nl.tudelft.pds.granula.archiver.entity;
 
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class Attribute extends Archivable {
+
     protected List<Source> sources;
+
+    public Attribute() {
+    }
 
     public Attribute(String name, String type) {
         this.name = name;

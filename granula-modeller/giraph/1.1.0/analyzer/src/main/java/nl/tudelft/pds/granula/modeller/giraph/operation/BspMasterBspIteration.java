@@ -19,13 +19,13 @@ package nl.tudelft.pds.granula.modeller.giraph.operation;
 import nl.tudelft.pds.granula.archiver.entity.info.*;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
 import nl.tudelft.pds.granula.archiver.entity.visual.TimeSeriesVisual;
-import nl.tudelft.pds.granula.modeller.fundamental.model.operation.ConcreteOperationModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.*;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.MainInfoTableVisualization;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.TableVisualization;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.VisualizationRule;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.linking.UniqueParentLinking;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.TimeSeriesVisualization;
+import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.*;
+import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
+import nl.tudelft.pds.granula.modeller.rule.visual.TableVisualization;
+import nl.tudelft.pds.granula.modeller.rule.visual.VisualizationRule;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
+import nl.tudelft.pds.granula.modeller.rule.visual.TimeSeriesVisualization;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 
 import java.util.ArrayList;
@@ -211,7 +211,7 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
 //            }
 
 
-            Info superstepNumInfo = new Info("NumSuperstep");
+            BasicInfo superstepNumInfo = new BasicInfo("NumSuperstep");
             superstepNumInfo.setDescription("The [NumSuperstep] is the total number of all actual supersteps (non-dataloading).");
             superstepNumInfo.addInfo(String.valueOf(superstepNum), superstepNumSources);
             operation.addInfo(superstepNumInfo);

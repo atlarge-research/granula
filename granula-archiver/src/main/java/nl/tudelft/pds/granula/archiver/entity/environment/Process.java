@@ -50,18 +50,18 @@ public class Process extends Entity {
         }
     }
 
-    public String exportBasic() {
-        return String.format("<Process name=\"%s\" uuid=\"%s\">", name, uuid);
-    }
-
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Process name=\"%s\" uuid=\"%s\">", name, uuid));
-
-        stringBuilder.append(exportInfos());
-        stringBuilder.append(exportVisuals());
-
-        stringBuilder.append("</Process>");
-        return stringBuilder.toString();
-    }
+//    public String exportBasic() {
+//        return String.format("<Process name=\"%s\" uuid=\"%s\">", name, uuid);
+//    }
+//
+//    public String export() {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append(String.format("<Process name=\"%s\" uuid=\"%s\">", name, uuid));
+//
+//        stringBuilder.append(exportInfos());
+//        stringBuilder.append(exportVisuals());
+//
+//        stringBuilder.append("</Process>");
+//        return stringBuilder.toString();
+//    }
 }

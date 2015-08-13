@@ -1,0 +1,948 @@
+From fdbfc45a46f69c4c5d113b46281a80e8a1e9f967 Mon Sep 17 00:00:00 2001
+From: Wing Lung Ngai <winglung.ngai@gmail.com>
+Date: Wed, 27 May 2015 19:46:49 +0200
+Subject: [PATCH] granular
+
+---
+ .gitignore                                         |   1 +
+ build.sh                                           |  13 +
+ .../main/scala/org/apache/spark/SparkContext.scala |  20 ++
+ .../scala/org/apache/spark/executor/Executor.scala |  12 +
+ .../org/apache/spark/scheduler/DAGScheduler.scala  |  32 ++
+ .../apache/spark/scheduler/TaskSetManager.scala    |  39 ++-
+ .../cluster/CoarseGrainedSchedulerBackend.scala    |   6 +
+ .../apache/spark/util/logging/GranularLogger.scala |  46 +++
+ .../scala/org/apache/spark/graphx/Pregel.scala     |  29 +-
+ pom.xml                                            |  34 ++-
+ project/SparkBuild.scala                           |   1 +
+ spark-core_2.10-1.1.1-granular.pom                 | 339 +++++++++++++++++++++
+ .../cluster/YarnClientSchedulerBackend.scala       |   4 +
+ .../org/apache/spark/deploy/yarn/Client.scala      |   7 +
+ 14 files changed, 563 insertions(+), 20 deletions(-)
+ create mode 100755 build.sh
+ create mode 100644 core/src/main/scala/org/apache/spark/util/logging/GranularLogger.scala
+ create mode 100644 spark-core_2.10-1.1.1-granular.pom
+
+diff --git a/.gitignore b/.gitignore
+index 7ec8d45..ab33b1f 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -59,3 +59,4 @@ metastore/
+ warehouse/
+ TempStatsStore/
+ sql/hive-thriftserver/test_warehouses
++build.log
+diff --git a/build.sh b/build.sh
+new file mode 100755
+index 0000000..86a7fbb
+--- /dev/null
++++ b/build.sh
+@@ -0,0 +1,13 @@
++export MAVEN_OPTS="-Xmx2g -XX:MaxPermSize=512M -XX:ReservedCodeCacheSize=512m"
++mvn -Pyarn -Phadoop-2.4 -Dhadoop.version=2.4.1 -DskipTests clean package
++
++
++mvn install:install-file -Dfile=graphx/target/spark-graphx_2.10-1.1.1.jar -DgroupId=org.apache.spark -DartifactId=spark-graphx_2.10 -Dversion=1.1.1-granular -Dpackaging=jar -q
++mvn install:install-file -Dfile=yarn/stable/target/spark-yarn_2.10-1.1.1.jar -DgroupId=org.apache.spark -DartifactId=spark-yarn_2.10 -Dversion=1.1.1-granular -Dpackaging=jar -q
++mvn install:install-file -Dfile=core/target/spark-core_2.10-1.1.1.jar -DgroupId=org.apache.spark -DartifactId=spark-core_2.10 -Dversion=1.1.1-granular -Dpackaging=jar -q
++
++cp spark-core_2.10-1.1.1-granular.pom /home/wing/.m2/repository/org/apache/spark/spark-core_2.10/1.1.1-granular/
++
++
++
++
+diff --git a/core/src/main/scala/org/apache/spark/SparkContext.scala b/core/src/main/scala/org/apache/spark/SparkContext.scala
+index cea5cf2..03ff668 100644
+--- a/core/src/main/scala/org/apache/spark/SparkContext.scala
++++ b/core/src/main/scala/org/apache/spark/SparkContext.scala
+@@ -17,6 +17,8 @@
+ 
+ package org.apache.spark
+ 
++import org.apache.spark.util.logging.GranularLogger
++
+ import scala.language.implicitConversions
+ 
+ import java.io._
+@@ -63,6 +65,11 @@ import org.apache.spark.util.{CallSite, ClosureCleaner, MetadataCleaner, Metadat
+ 
+ class SparkContext(config: SparkConf) extends Logging {
+ 
++
++  val appStartupLogger =
++    new GranularLogger("SparkApplication", "Id.Unique", "AppStartup", "Id.Unique");
++  appStartupLogger.log("StartTime", s"${System.currentTimeMillis()}");
++
+   // This is used only by YARN for now, but should be relevant to other cluster types (Mesos,
+   // etc) too. This is typically generated from InputFormatInfo.computePreferredLocations. It
+   // contains a map from hostname to a list of input format splits on the host.
+@@ -187,6 +194,7 @@ class SparkContext(config: SparkConf) extends Logging {
+ 
+   val master = conf.get("spark.master")
+   val appName = conf.get("spark.app.name")
++  appStartupLogger.log("ApplicationName", appName);
+ 
+   // Generate the random name for a temp folder in Tachyon
+   // Add a timestamp as the suffix here to make it more safe
+@@ -291,6 +299,8 @@ class SparkContext(config: SparkConf) extends Logging {
+     .map(Utils.memoryStringToMb)
+     .getOrElse(512)
+ 
++  appStartupLogger.log("ExecutorMemory", s"${executorMemory}");
++
+   // Environment variables to pass to our executors.
+   private[spark] val executorEnvs = HashMap[String, String]()
+ 
+@@ -568,6 +578,7 @@ class SparkContext(config: SparkConf) extends Logging {
+     // A Hadoop configuration can be about 10 KB, which is pretty big, so broadcast it.
+     val confBroadcast = broadcast(new SerializableWritable(hadoopConfiguration))
+     val setInputPathsFunc = (jobConf: JobConf) => FileInputFormat.setInputPaths(jobConf, path)
++    appStartupLogger.log("DataInputPath", path)
+     new HadoopRDD(
+       this,
+       confBroadcast,
+@@ -1017,6 +1028,10 @@ class SparkContext(config: SparkConf) extends Logging {
+ 
+   /** Shut down the SparkContext. */
+   def stop() {
++    val appTerminationLogger =
++      new GranularLogger("SparkApplication", "Id.Unique", "AppTermination", "Id.Unique");
++    appTerminationLogger.log("StartTime", s"${System.currentTimeMillis()}");
++
+     postApplicationEnd()
+     ui.foreach(_.stop())
+     // Do this only if not stopped already - best case effort.
+@@ -1036,6 +1051,8 @@ class SparkContext(config: SparkConf) extends Logging {
+       listenerBus.stop()
+       eventLogger.foreach(_.stop())
+       logInfo("Successfully stopped SparkContext")
++
++      appTerminationLogger.log("EndTime", s"${System.currentTimeMillis()}");
+     } else {
+       logInfo("SparkContext already stopped")
+     }
+@@ -1106,11 +1123,14 @@ class SparkContext(config: SparkConf) extends Logging {
+     val callSite = getCallSite
+     val cleanedFunc = clean(func)
+     logInfo("Starting job: " + callSite.shortForm)
++
+     val start = System.nanoTime
+     dagScheduler.runJob(rdd, cleanedFunc, partitions, callSite, allowLocal,
+       resultHandler, localProperties.get)
+     logInfo(
+       "Job finished: " + callSite.shortForm + ", took " + (System.nanoTime - start) / 1e9 + " s")
++
++    dagScheduler
+     rdd.doCheckpoint()
+   }
+ 
+diff --git a/core/src/main/scala/org/apache/spark/executor/Executor.scala b/core/src/main/scala/org/apache/spark/executor/Executor.scala
+index 4f49b07..74a1a5a 100644
+--- a/core/src/main/scala/org/apache/spark/executor/Executor.scala
++++ b/core/src/main/scala/org/apache/spark/executor/Executor.scala
+@@ -22,6 +22,8 @@ import java.lang.management.ManagementFactory
+ import java.nio.ByteBuffer
+ import java.util.concurrent._
+ 
++import org.apache.spark.util.logging.GranularLogger
++
+ import scala.collection.JavaConversions._
+ import scala.collection.mutable.{ArrayBuffer, HashMap}
+ import scala.util.control.NonFatal
+@@ -142,6 +144,9 @@ private[spark] class Executor(
+     }
+ 
+     override def run() {
++      val taskLogger = new GranularLogger("Executor", s"$executorId", "Task", s"$taskId");
++      taskLogger.log("StartTime", s"${System.currentTimeMillis()}")
++
+       val startTime = System.currentTimeMillis()
+       SparkEnv.set(env)
+       Thread.currentThread.setContextClassLoader(replClassLoader)
+@@ -173,10 +178,12 @@ private[spark] class Executor(
+         logDebug("Task " + taskId + "'s epoch is " + task.epoch)
+         env.mapOutputTracker.updateEpoch(task.epoch)
+ 
++
+         // Run the actual task and measure its runtime.
+         taskStart = System.currentTimeMillis()
+         val value = task.run(taskId.toInt)
+         val taskFinish = System.currentTimeMillis()
++        taskLogger.log("EndTime", s"${System.currentTimeMillis()}")
+ 
+         // If the task has been killed, let's fail it.
+         if (task.killed) {
+@@ -195,6 +202,11 @@ private[spark] class Executor(
+           m.resultSerializationTime = afterSerialization - beforeSerialization
+         }
+ 
++
++
++        taskLogger.log("RunTime", s"${taskFinish - taskStart}")
++
++
+         val accumUpdates = Accumulators.values
+ 
+         val directResult = new DirectTaskResult(valueBytes, accumUpdates, task.metrics.orNull)
+diff --git a/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala b/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala
+index 688931a..cef8e9b 100644
+--- a/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala
++++ b/core/src/main/scala/org/apache/spark/scheduler/DAGScheduler.scala
+@@ -21,6 +21,8 @@ import java.io.NotSerializableException
+ import java.util.Properties
+ import java.util.concurrent.atomic.AtomicInteger
+ 
++import org.apache.spark.util.logging.GranularLogger
++
+ import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet, Map, Stack}
+ import scala.concurrent.Await
+ import scala.concurrent.duration._
+@@ -514,6 +516,12 @@ class DAGScheduler(
+         logInfo("Failed to run " + callSite.shortForm)
+         throw exception
+     }
++
++    val jobId = nextJobId.get() - 1;
++    val jobLogger = new GranularLogger("SparkJob", "Id.Unique", "SparkJob", "undefined");
++    jobLogger.missionId = s"$jobId"
++    jobLogger.log("EndTime", s"${System.currentTimeMillis()}")
++
+   }
+ 
+   def runApproximateJob[T, U, R](
+@@ -733,6 +741,14 @@ class DAGScheduler(
+     if (finalStage != null) {
+       val job = new ActiveJob(jobId, finalStage, func, partitions, callSite, listener, properties)
+       clearCacheLocs()
++
++
++
++      val jobLogger = new GranularLogger("SparkJob", "Id.Unique", "SparkJob", "undefined");
++      jobLogger.missionId = s"$jobId"
++      jobLogger.log("StartTime", s"${System.currentTimeMillis()}")
++
++
+       logInfo("Got job %s (%s) with %d output partitions (allowLocal=%s)".format(
+         job.jobId, callSite.shortForm, partitions.length, allowLocal))
+       logInfo("Final stage: " + finalStage + "(" + finalStage.name + ")")
+@@ -766,6 +782,11 @@ class DAGScheduler(
+         logDebug("missing: " + missing)
+         if (missing == Nil) {
+           logInfo("Submitting " + stage + " (" + stage.rdd + "), which has no missing parents")
++
++          val stageId = stage.id
++          val stageLogger = new GranularLogger("DagScheduler", s"$stageId", "Stage", s"$stageId");
++          stageLogger.log("StartTime", s"${System.currentTimeMillis()}")
++
+           submitMissingTasks(stage, jobId.get)
+         } else {
+           for (parent <- missing) {
+@@ -922,6 +943,12 @@ class DAGScheduler(
+       }
+       if (errorMessage.isEmpty) {
+         logInfo("%s (%s) finished in %s s".format(stage, stage.name, serviceTime))
++
++        val stageId = stage.id
++        val stageLogger = new GranularLogger("DagScheduler", s"$stageId", "Stage", s"$stageId");
++        stageLogger.log("StackTrace", s"${stageLogger.trace(stage.details)}")
++        stageLogger.log("EndTime", s"${System.currentTimeMillis()}")
++
+         stage.latestInfo.completionTime = Some(clock.getTime())
+       } else {
+         stage.latestInfo.stageFailed(errorMessage.get)
+@@ -1034,6 +1061,11 @@ class DAGScheduler(
+                   jobId <- activeJobForStage(stage)
+                 } {
+                   logInfo("Submitting " + stage + " (" + stage.rdd + "), which is now runnable")
++                  val stageId = stage.id
++                  val stageLogger = new GranularLogger("DagScheduler",
++                    s"$stageId", "Stage", s"$stageId");
++                  stageLogger.log("StartTime", s"${System.currentTimeMillis()}")
++
+                   submitMissingTasks(stage, jobId)
+                 }
+               }
+diff --git a/core/src/main/scala/org/apache/spark/scheduler/TaskSetManager.scala b/core/src/main/scala/org/apache/spark/scheduler/TaskSetManager.scala
+index d9d53fa..6ad54cd 100644
+--- a/core/src/main/scala/org/apache/spark/scheduler/TaskSetManager.scala
++++ b/core/src/main/scala/org/apache/spark/scheduler/TaskSetManager.scala
+@@ -20,6 +20,8 @@ package org.apache.spark.scheduler
+ import java.io.NotSerializableException
+ import java.util.Arrays
+ 
++import org.apache.spark.util.logging.GranularLogger
++
+ import scala.collection.mutable.ArrayBuffer
+ import scala.collection.mutable.HashMap
+ import scala.collection.mutable.HashSet
+@@ -29,7 +31,7 @@ import scala.math.min
+ import org.apache.spark._
+ import org.apache.spark.TaskState.TaskState
+ import org.apache.spark.executor.TaskMetrics
+-import org.apache.spark.util.{Clock, SystemClock}
++import org.apache.spark.util.{Utils, CallSite, Clock, SystemClock}
+ 
+ /**
+  * Schedules the tasks within a single TaskSet in the TaskSchedulerImpl. This class keeps track of
+@@ -453,6 +455,11 @@ private[spark] class TaskSetManager(
+           logInfo("Starting %s (TID %d, %s, %s, %d bytes)".format(
+               taskName, taskId, host, taskLocality, serializedTask.limit))
+ 
++          val taskLogger = new GranularLogger("Executor", s"$execId", "Task", s"$taskId");
++
++          taskLogger.log("Node", s"$host")
++//          taskLogger.log("StackTrace", taskLogger.trace(s"${Utils.getCallSite().longForm}"))
++
+           sched.dagScheduler.taskStarted(task, info)
+           return Some(new TaskDescription(taskId, execId, taskName, index, serializedTask))
+         }
+@@ -516,6 +523,36 @@ private[spark] class TaskSetManager(
+       tasksSuccessful += 1
+       logInfo("Finished task %s in stage %s (TID %d) in %d ms on %s (%d/%d)".format(
+         info.id, taskSet.id, info.taskId, info.duration, info.host, tasksSuccessful, numTasks))
++
++      val localTaskId = info.id;
++      val stageId = taskSet.id;
++      val taskId = info.taskId;
++      val taskLogger = new GranularLogger("Executor", s"${info.executorId}", "Task", s"$taskId");
++      taskLogger.log("LocalTaskId", s"$localTaskId")
++      taskLogger.log("StageId", s"$stageId")
++
++      val input = result.metrics.inputMetrics
++      var inputSortable = input.map(_.bytesRead.toString).getOrElse("")
++      inputSortable = if (inputSortable.equals("")) "0" else inputSortable
++      val inputReadable = input
++        .map(m => s"${m.readMethod.toString.toLowerCase()}").getOrElse("unknown")
++      taskLogger.log("InputSize", s"${inputSortable}")
++      taskLogger.log("InputMethod", s"${inputReadable}")
++
++      val shuffleRead = result.metrics.shuffleReadMetrics.map(_.remoteBytesRead)
++      var shuffleReadSortable = shuffleRead.map(_.toString).getOrElse("")
++      shuffleReadSortable = if (shuffleReadSortable.equals("")) "0" else shuffleReadSortable
++      taskLogger.log("ShuffleRead", s"${shuffleReadSortable}")
++
++      val shuffleWrite = result.metrics.shuffleWriteMetrics.map(_.shuffleBytesWritten)
++      var shuffleWriteStr = shuffleWrite.map(_.toString).getOrElse("")
++      shuffleWriteStr = if (shuffleWriteStr.equals("")) "0" else shuffleWriteStr
++      taskLogger.log("ShuffleWrite", s"${shuffleWriteStr}")
++
++
++
++
++
+       // Mark successful and stop if all the tasks have succeeded.
+       successful(index) = true
+       if (tasksSuccessful == numTasks) {
+diff --git a/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala b/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala
+index e8a3a3b..6b2c71e 100644
+--- a/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala
++++ b/core/src/main/scala/org/apache/spark/scheduler/cluster/CoarseGrainedSchedulerBackend.scala
+@@ -19,6 +19,8 @@ package org.apache.spark.scheduler.cluster
+ 
+ import java.util.concurrent.atomic.AtomicInteger
+ 
++import org.apache.spark.util.logging.GranularLogger
++
+ import scala.collection.mutable.{ArrayBuffer, HashMap, HashSet}
+ import scala.concurrent.Await
+ import scala.concurrent.duration._
+@@ -272,6 +274,10 @@ class CoarseGrainedSchedulerBackend(scheduler: TaskSchedulerImpl, actorSystem: A
+     if (sufficientResourcesRegistered) {
+       logInfo("SchedulerBackend is ready for scheduling beginning after " +
+         s"reached minRegisteredResourcesRatio: $minRegisteredRatio")
++      val yarnLogger = new GranularLogger("SparkApplication",
++        "Id.Unique", "ExecutorAssignment", "Id.Unique");
++      yarnLogger.log("EndTime", s"${System.currentTimeMillis()}");
++
+       return true
+     }
+     if ((System.currentTimeMillis() - createTime) >= maxRegisteredWaitingTime) {
+diff --git a/core/src/main/scala/org/apache/spark/util/logging/GranularLogger.scala b/core/src/main/scala/org/apache/spark/util/logging/GranularLogger.scala
+new file mode 100644
+index 0000000..90b4273
+--- /dev/null
++++ b/core/src/main/scala/org/apache/spark/util/logging/GranularLogger.scala
+@@ -0,0 +1,46 @@
++/*
++ * Licensed to the Apache Software Foundation (ASF) under one or more
++ * contributor license agreements.  See the NOTICE file distributed with
++ * this work for additional information regarding copyright ownership.
++ * The ASF licenses this file to You under the Apache License, Version 2.0
++ * (the "License"); you may not use this file except in compliance with
++ * the License.  You may obtain a copy of the License at
++ *
++ *    http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++package org.apache.spark.util.logging
++
++import org.apache.spark.Logging
++import org.apache.spark.util.Utils
++
++class GranularLogger(aType: String, aId: String,
++  mType: String, mId: String) extends Logging {
++
++  var actorType = aType;
++  var actorId = aId;
++  var missionType = mType;
++  var missionId = mId;
++
++  def log(infoName: String, infoValue: String) {
++    val escapedValue = infoValue.replaceAll(":", "\\[COLON\\]").replaceAll("\\s+", "\\[SPACE\\]");
++    logInfo("Granular - InfoName:%s InfoValue:%s".format(infoName, escapedValue) +
++      " ActorType:%s ActorId:%s MissionType:%s MissionId:%s"
++      .format(actorType, actorId, missionType, missionId) +
++      s" Timestamp:${System.currentTimeMillis()}")
++  }
++
++  def trace(callSite: String): String = {
++    callSite.replace('\n', '#').replace("\\s+", "#").replace(' ', '#').replace(':', '@')
++  }
++
++
++
++
++}
+diff --git a/graphx/src/main/scala/org/apache/spark/graphx/Pregel.scala b/graphx/src/main/scala/org/apache/spark/graphx/Pregel.scala
+index 5e55620..349ab00 100644
+--- a/graphx/src/main/scala/org/apache/spark/graphx/Pregel.scala
++++ b/graphx/src/main/scala/org/apache/spark/graphx/Pregel.scala
+@@ -17,6 +17,8 @@
+ 
+ package org.apache.spark.graphx
+ 
++import org.apache.spark.util.logging.GranularLogger
++
+ import scala.reflect.ClassTag
+ import org.apache.spark.Logging
+ 
+@@ -94,7 +96,7 @@ object Pregel extends Logging {
+    * vertex and receives the inbound message and computes a new vertex
+    * value.  On the first iteration the vertex program is invoked on
+    * all vertices and is passed the default message.  On subsequent
+-   * iterations the vertex program is only invoked on those vertices
++   * iteratiions the vertex program is only invoked on those vertices
+    * that receive messages.
+    *
+    * @param sendMsg a user supplied function that is applied to out
+@@ -119,30 +121,51 @@ object Pregel extends Logging {
+       mergeMsg: (A, A) => A)
+     : Graph[VD, ED] =
+   {
++
++    var i = 0
++
++    val superstepLogger = new GranularLogger("Coordinator", "Id.Unique", "Superstep", s"$i");
++
++    superstepLogger.log("StartTime", s"${System.currentTimeMillis()}")
+     var g = graph.mapVertices((vid, vdata) => vprog(vid, vdata, initialMsg)).cache()
+     // compute the messages
+     var messages = g.mapReduceTriplets(sendMsg, mergeMsg)
+     var activeMessages = messages.count()
++    superstepLogger.log("MessageCount", s"${activeMessages}")
++    superstepLogger.log("EndTime", s"${System.currentTimeMillis()}")
++
+     // Loop
+     var prevG: Graph[VD, ED] = null
+-    var i = 0
++
++    i += 1
++
++
+     while (activeMessages > 0 && i < maxIterations) {
++
++      superstepLogger.missionId =  s"$i";
++      superstepLogger.log("StartTime", s"${System.currentTimeMillis()}")
++
+       // Receive the messages. Vertices that didn't get any messages do not appear in newVerts.
+       val newVerts = g.vertices.innerJoin(messages)(vprog).cache()
++
+       // Update the graph with the new vertices.
+       prevG = g
+       g = g.outerJoinVertices(newVerts) { (vid, old, newOpt) => newOpt.getOrElse(old) }
+       g.cache()
+-
+       val oldMessages = messages
++
+       // Send new messages. Vertices that didn't get any messages don't appear in newVerts, so don't
+       // get to send messages. We must cache messages so it can be materialized on the next line,
+       // allowing us to uncache the previous iteration.
+       messages = g.mapReduceTriplets(sendMsg, mergeMsg, Some((newVerts, activeDirection))).cache()
++
+       // The call to count() materializes `messages`, `newVerts`, and the vertices of `g`. This
+       // hides oldMessages (depended on by newVerts), newVerts (depended on by messages), and the
+       // vertices of prevG (depended on by newVerts, oldMessages, and the vertices of g).
+       activeMessages = messages.count()
++      superstepLogger.log("MessageCount", s"${activeMessages}")
++
++      superstepLogger.log("EndTime", s"${System.currentTimeMillis()}")
+ 
+       logInfo("Pregel finished iteration " + i)
+ 
+diff --git a/pom.xml b/pom.xml
+index 0848bd1..106d380 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -86,23 +86,23 @@
+ 
+   <modules>
+     <module>core</module>
+-    <module>bagel</module>
++    <!--<module>bagel</module>-->
+     <module>graphx</module>
+-    <module>mllib</module>
+-    <module>tools</module>
+-    <module>streaming</module>
+-    <module>sql/catalyst</module>
+-    <module>sql/core</module>
+-    <module>sql/hive</module>
+-    <module>repl</module>
+-    <module>assembly</module>
+-    <module>external/twitter</module>
+-    <module>external/kafka</module>
+-    <module>external/flume</module>
+-    <module>external/flume-sink</module>
+-    <module>external/zeromq</module>
+-    <module>external/mqtt</module>
+-    <module>examples</module>
++    <!--<module>mllib</module>-->
++    <!--<module>tools</module>-->
++    <!--<module>streaming</module>-->
++    <!--<module>sql/catalyst</module>-->
++    <!--<module>sql/core</module>-->
++    <!--<module>sql/hive</module>-->
++    <!--<module>repl</module>-->
++    <!--<module>assembly</module>-->
++    <!--<module>external/twitter</module>-->
++    <!--<module>external/kafka</module>-->
++    <!--<module>external/flume</module>-->
++    <!--<module>external/flume-sink</module>-->
++    <!--<module>external/zeromq</module>-->
++    <!--<module>external/mqtt</module>-->
++    <!--<module>examples</module>-->
+   </modules>
+ 
+   <properties>
+@@ -826,6 +826,8 @@
+               <arg>-unchecked</arg>
+               <arg>-deprecation</arg>
+               <arg>-feature</arg>
++              <arg>-Xmax-classfile-name</arg>
++              <arg>128</arg>
+               <arg>-language:postfixOps</arg>
+             </args>
+             <jvmArgs>
+diff --git a/project/SparkBuild.scala b/project/SparkBuild.scala
+index 60603cd..d8d2b29 100644
+--- a/project/SparkBuild.scala
++++ b/project/SparkBuild.scala
+@@ -116,6 +116,7 @@ object SparkBuild extends PomBuild {
+     retrieveManaged := true,
+     retrievePattern := "[type]s/[artifact](-[revision])(-[classifier]).[ext]",
+     publishMavenStyle := true,
++    scalacOptions in Compile ++= Seq("-Xmax-classfile-name", "128"),
+   
+     resolvers += Resolver.mavenLocal,
+     otherResolvers <<= SbtPomKeys.mvnLocalRepository(dotM2 => Seq(Resolver.file("dotM2", dotM2))),
+diff --git a/spark-core_2.10-1.1.1-granular.pom b/spark-core_2.10-1.1.1-granular.pom
+new file mode 100644
+index 0000000..96effdb
+--- /dev/null
++++ b/spark-core_2.10-1.1.1-granular.pom
+@@ -0,0 +1,339 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!--
++  ~ Licensed to the Apache Software Foundation (ASF) under one or more
++  ~ contributor license agreements.  See the NOTICE file distributed with
++  ~ this work for additional information regarding copyright ownership.
++  ~ The ASF licenses this file to You under the Apache License, Version 2.0
++  ~ (the "License"); you may not use this file except in compliance with
++  ~ the License.  You may obtain a copy of the License at
++  ~
++  ~    http://www.apache.org/licenses/LICENSE-2.0
++  ~
++  ~ Unless required by applicable law or agreed to in writing, software
++  ~ distributed under the License is distributed on an "AS IS" BASIS,
++  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++  ~ See the License for the specific language governing permissions and
++  ~ limitations under the License.
++  -->
++
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++  <modelVersion>4.0.0</modelVersion>
++  <parent>
++    <groupId>org.apache.spark</groupId>
++    <artifactId>spark-parent</artifactId>
++    <version>1.1.1</version>
++    <relativePath>../pom.xml</relativePath>
++  </parent>
++
++  <groupId>org.apache.spark</groupId>
++  <artifactId>spark-core_2.10</artifactId>
++  <properties>
++    <sbt.project.name>core</sbt.project.name>
++  </properties>
++  <packaging>jar</packaging>
++  <name>Spark Project Core</name>
++  <url>http://spark.apache.org/</url>
++  <dependencies>
++    <dependency>
++      <groupId>org.apache.hadoop</groupId>
++      <artifactId>hadoop-client</artifactId>
++      <exclusions>
++        <exclusion>
++          <groupId>javax.servlet</groupId>
++          <artifactId>servlet-api</artifactId>
++        </exclusion>
++      </exclusions>
++    </dependency>
++    <dependency>
++      <groupId>net.java.dev.jets3t</groupId>
++      <artifactId>jets3t</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.apache.curator</groupId>
++      <artifactId>curator-recipes</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.eclipse.jetty</groupId>
++      <artifactId>jetty-plus</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.eclipse.jetty</groupId>
++      <artifactId>jetty-security</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.eclipse.jetty</groupId>
++      <artifactId>jetty-util</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.eclipse.jetty</groupId>
++      <artifactId>jetty-server</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.google.guava</groupId>
++      <artifactId>guava</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.apache.commons</groupId>
++      <artifactId>commons-lang3</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.apache.commons</groupId>
++      <artifactId>commons-math3</artifactId>
++      <version>3.3</version>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>com.google.code.findbugs</groupId>
++      <artifactId>jsr305</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.slf4j</groupId>
++      <artifactId>slf4j-api</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.slf4j</groupId>
++      <artifactId>jul-to-slf4j</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.slf4j</groupId>
++      <artifactId>jcl-over-slf4j</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>log4j</groupId>
++      <artifactId>log4j</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.slf4j</groupId>
++      <artifactId>slf4j-log4j12</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.ning</groupId>
++      <artifactId>compress-lzf</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.xerial.snappy</groupId>
++      <artifactId>snappy-java</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>net.jpountz.lz4</groupId>
++      <artifactId>lz4</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.twitter</groupId>
++      <artifactId>chill_${scala.binary.version}</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.twitter</groupId>
++      <artifactId>chill-java</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>commons-net</groupId>
++      <artifactId>commons-net</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>${akka.group}</groupId>
++      <artifactId>akka-remote_${scala.binary.version}</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>${akka.group}</groupId>
++      <artifactId>akka-slf4j_${scala.binary.version}</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>${akka.group}</groupId>
++      <artifactId>akka-testkit_${scala.binary.version}</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.scala-lang</groupId>
++      <artifactId>scala-library</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.json4s</groupId>
++      <artifactId>json4s-jackson_${scala.binary.version}</artifactId>
++      <version>3.2.10</version>
++    </dependency>
++    <dependency>
++      <groupId>colt</groupId>
++      <artifactId>colt</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.apache.mesos</groupId>
++      <artifactId>mesos</artifactId>
++      <classifier>${mesos.classifier}</classifier>
++    </dependency>
++    <dependency>
++      <groupId>io.netty</groupId>
++      <artifactId>netty-all</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.clearspring.analytics</groupId>
++      <artifactId>stream</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.codahale.metrics</groupId>
++      <artifactId>metrics-core</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.codahale.metrics</groupId>
++      <artifactId>metrics-jvm</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.codahale.metrics</groupId>
++      <artifactId>metrics-json</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>com.codahale.metrics</groupId>
++      <artifactId>metrics-graphite</artifactId>
++    </dependency>
++    <dependency>
++      <groupId>org.apache.derby</groupId>
++      <artifactId>derby</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.tachyonproject</groupId>
++      <artifactId>tachyon-client</artifactId>
++      <version>0.5.0</version>
++      <exclusions>
++        <exclusion>
++          <groupId>org.apache.hadoop</groupId>
++          <artifactId>hadoop-client</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.apache.curator</groupId>
++          <artifactId>curator-recipes</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.eclipse.jetty</groupId>
++          <artifactId>jetty-jsp</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.eclipse.jetty</groupId>
++          <artifactId>jetty-webapp</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.eclipse.jetty</groupId>
++          <artifactId>jetty-server</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.eclipse.jetty</groupId>
++          <artifactId>jetty-servlet</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>junit</groupId>
++          <artifactId>junit</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.powermock</groupId>
++          <artifactId>powermock-module-junit4</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.powermock</groupId>
++          <artifactId>powermock-api-mockito</artifactId>
++        </exclusion>
++        <exclusion>
++          <groupId>org.apache.curator</groupId>
++          <artifactId>curator-test</artifactId>
++        </exclusion>
++      </exclusions>
++    </dependency>
++    <dependency>
++      <groupId>org.scalatest</groupId>
++      <artifactId>scalatest_${scala.binary.version}</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.mockito</groupId>
++      <artifactId>mockito-all</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.scalacheck</groupId>
++      <artifactId>scalacheck_${scala.binary.version}</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.easymock</groupId>
++      <artifactId>easymockclassextension</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>asm</groupId>
++      <artifactId>asm</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>junit</groupId>
++      <artifactId>junit</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>com.novocode</groupId>
++      <artifactId>junit-interface</artifactId>
++      <scope>test</scope>
++    </dependency>
++    <dependency>
++      <groupId>org.spark-project</groupId>
++      <artifactId>pyrolite</artifactId>
++      <version>2.0.1</version>
++    </dependency>
++    <dependency>
++      <groupId>net.sf.py4j</groupId>
++      <artifactId>py4j</artifactId>
++      <version>0.8.2.1</version>
++    </dependency>
++  </dependencies>
++  <build>
++    <outputDirectory>target/scala-${scala.binary.version}/classes</outputDirectory>
++    <testOutputDirectory>target/scala-${scala.binary.version}/test-classes</testOutputDirectory>
++    <plugins>
++      <plugin>
++        <groupId>org.scalatest</groupId>
++        <artifactId>scalatest-maven-plugin</artifactId>
++        <configuration>
++          <environmentVariables>
++            <SPARK_HOME>${basedir}/..</SPARK_HOME>
++            <SPARK_TESTING>1</SPARK_TESTING>
++            <SPARK_CLASSPATH>${spark.classpath}</SPARK_CLASSPATH>
++          </environmentVariables>
++        </configuration>
++      </plugin>
++      <!-- Unzip py4j so we can include its files in the jar -->
++      <plugin>
++        <groupId>org.apache.maven.plugins</groupId>
++        <artifactId>maven-antrun-plugin</artifactId>
++        <executions>
++          <execution>
++            <phase>generate-resources</phase>
++            <goals>
++              <goal>run</goal>
++            </goals>
++          </execution>
++        </executions>
++        <configuration>
++          <tasks>
++            <unzip src="../python/lib/py4j-0.8.2.1-src.zip" dest="../python/build" />
++          </tasks>
++        </configuration>
++      </plugin>
++    </plugins>
++
++    <resources>
++      <resource>
++        <directory>src/main/resources</directory>
++      </resource>
++      <resource>
++        <directory>../python</directory>
++        <includes>
++          <include>pyspark/*.py</include>
++        </includes>
++      </resource>
++      <resource>
++        <directory>../python/build</directory>
++        <includes>
++          <include>py4j/*.py</include>
++        </includes>
++      </resource>
++    </resources>
++  </build>
++</project>
+diff --git a/yarn/common/src/main/scala/org/apache/spark/scheduler/cluster/YarnClientSchedulerBackend.scala b/yarn/common/src/main/scala/org/apache/spark/scheduler/cluster/YarnClientSchedulerBackend.scala
+index a968d43..81910a6 100644
+--- a/yarn/common/src/main/scala/org/apache/spark/scheduler/cluster/YarnClientSchedulerBackend.scala
++++ b/yarn/common/src/main/scala/org/apache/spark/scheduler/cluster/YarnClientSchedulerBackend.scala
+@@ -18,6 +18,7 @@
+ package org.apache.spark.scheduler.cluster
+ 
+ import org.apache.hadoop.yarn.api.records.{ApplicationId, YarnApplicationState}
++import org.apache.spark.util.logging.GranularLogger
+ import org.apache.spark.{SparkException, Logging, SparkContext}
+ import org.apache.spark.deploy.yarn.{Client, ClientArguments, ExecutorLauncher, YarnSparkHadoopUtil}
+ import org.apache.spark.scheduler.TaskSchedulerImpl
+@@ -154,6 +155,9 @@ private[spark] class YarnClientSchedulerBackend(
+   }
+ 
+   override def sufficientResourcesRegistered(): Boolean = {
++    val yarnLogger = new GranularLogger("SparkApplication",
++      "Id.Unique", "ExecutorAssignment", "Id.Unique");
++    yarnLogger.log("ExecutorSize", s"${totalExpectedExecutors}");
+     totalRegisteredExecutors.get() >= totalExpectedExecutors * minRegisteredRatio
+   }
+ }
+diff --git a/yarn/stable/src/main/scala/org/apache/spark/deploy/yarn/Client.scala b/yarn/stable/src/main/scala/org/apache/spark/deploy/yarn/Client.scala
+index da05f7d..cd52fb8 100644
+--- a/yarn/stable/src/main/scala/org/apache/spark/deploy/yarn/Client.scala
++++ b/yarn/stable/src/main/scala/org/apache/spark/deploy/yarn/Client.scala
+@@ -27,6 +27,7 @@ import org.apache.hadoop.yarn.client.api.YarnClient
+ import org.apache.hadoop.yarn.conf.YarnConfiguration
+ import org.apache.hadoop.yarn.ipc.YarnRPC
+ import org.apache.hadoop.yarn.util.Records
++import org.apache.spark.util.logging.GranularLogger
+ 
+ import org.apache.spark.{Logging, SparkConf, SparkException}
+ 
+@@ -114,7 +115,13 @@ class Client(clientArgs: ClientArguments, hadoopConf: Configuration, spConf: Spa
+ 
+   def submitApp(appContext: ApplicationSubmissionContext) = {
+     // Submit the application to the applications manager.
++    val appStartupLogger = new GranularLogger(
++      "SparkApplication", "Id.Unique", "AppStartup", "Id.Unique");
++    appStartupLogger.log("EndTime", s"${System.currentTimeMillis()}");
+     logInfo("Submitting application to ResourceManager")
++    val yarnLogger = new GranularLogger("SparkApplication",
++      "Id.Unique", "ExecutorAssignment", "Id.Unique");
++    yarnLogger.log("StartTime", s"${System.currentTimeMillis()}");
+     yarnClient.submitApplication(appContext)
+   }
+ 
+-- 
+1.9.1
+

@@ -16,15 +16,21 @@
 
 package nl.tudelft.pds.granula.archiver.entity.info;
 
-import nl.tudelft.pds.granula.ArchiverConfiguration;
 import nl.tudelft.pds.granula.archiver.entity.Attribute;
 import nl.tudelft.pds.granula.archiver.entity.Identifier;
 
+import javax.xml.bind.annotation.*;
 import java.util.List;
 
-public class Info extends Attribute {
+@XmlRootElement(name="Info")
+@XmlSeeAlso({BasicInfo.class, SummaryInfo.class, TimeSeriesInfo.class})
+public abstract class Info extends Attribute {
     String value;
     String description;
+
+    private Info() {
+        this("unspecified");
+    }
 
     public Info(String name) {
         this(name, Identifier.BasicInfo);
@@ -35,38 +41,7 @@ public class Info extends Attribute {
         this.description = "It is not certain how this information is derived.";
     }
 
-    public void addInfo(String value, List<Source> sources) {
-        this.value = value;
-        for (Source source : sources) {
-            addSource(source);
-        }
-
-    }
-
-    public String exportBasic() {
-        return String.format("<Info name=\"%s\" value=\"%s\" type=\"%s\" uuid=\"%s\"/>", name, value, type, uuid);
-    }
-
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Info name=\"%s\" value=\"%s\" type=\"%s\" uuid=\"%s\">", name, value, type, uuid));
-
-        if(ArchiverConfiguration.ExportDescription) {
-            stringBuilder.append(String.format("<Description>%s</Description>", description));
-        } else {
-            stringBuilder.append(String.format("<Description>%s</Description>", ""));
-        }
-
-
-        stringBuilder.append("<Sources>");
-        for (Source source : sources) {
-            stringBuilder.append(source.export());
-        }
-        stringBuilder.append("</Sources>");
-        stringBuilder.append("</Info>");
-        return stringBuilder.toString();
-    }
-
+    @XmlAttribute
     public String getValue() {
         return value;
     }
@@ -75,6 +50,8 @@ public class Info extends Attribute {
         this.value = value;
     }
 
+    @XmlElementWrapper(name="Sources")
+    @XmlElementRef
     public List<Source> getSources() {
         return sources;
     }
@@ -83,6 +60,7 @@ public class Info extends Attribute {
         sources.add(source);
     }
 
+    @XmlElement(name="Description")
     public String getDescription() {
         return description;
     }

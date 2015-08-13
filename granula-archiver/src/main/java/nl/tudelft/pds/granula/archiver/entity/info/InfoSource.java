@@ -16,14 +16,25 @@
 
 package nl.tudelft.pds.granula.archiver.entity.info;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wing on 26-2-15.
  */
+@XmlRootElement(name="Source")
 public class InfoSource extends Source {
     List<String> infoUuids;
+    String infoUuid;
+
+    public InfoSource() {
+        this.name = "unspecified";
+        this.type = "InfoSource";
+        infoUuids = new ArrayList<>();
+    }
 
     public InfoSource(String name, List<Info> infos) {
         this.type = "InfoSource";
@@ -32,6 +43,12 @@ public class InfoSource extends Source {
         for (Info info : infos) {
             infoUuids.add(info.getUuid());
         }
+
+        String uuidsText = "";
+        for (String infoUuid : infoUuids) {
+            uuidsText += (uuidsText.length() == 0) ? infoUuid : ";" + infoUuid;
+        }
+        infoUuid = uuidsText;
     }
 
     public InfoSource(String name, Info info) {
@@ -39,25 +56,20 @@ public class InfoSource extends Source {
         this.name = name;
         infoUuids = new ArrayList<>();
         infoUuids.add(info.getUuid());
+
+        String uuidsText = "";
+        for (String infoUuid : infoUuids) {
+            uuidsText += (uuidsText.length() == 0) ? infoUuid : ";" + infoUuid;
+        }
+        infoUuid = uuidsText;
     }
 
     public List<String> getInfoUuids() {
         return infoUuids;
     }
 
-    @Override
-    public String export() {
-        return exportBasic();
-    }
-
-    @Override
-    public String exportBasic() {
-
-        String uuidsText = "";
-        for (String infoUuid : infoUuids) {
-            uuidsText += (uuidsText.length() == 0) ? infoUuid : ";" + infoUuid;
-        }
-
-        return String.format("<Source name=\"%s\" type=\"%s\" infoUuid=\"%s\" />", name, type, uuidsText);
+    @XmlAttribute
+    public String getInfoUuid() {
+        return infoUuid;
     }
 }

@@ -17,20 +17,30 @@
 package nl.tudelft.pds.granula.archiver.entity.visual;
 
 import nl.tudelft.pds.granula.archiver.entity.Identifier;
+import nl.tudelft.pds.granula.archiver.entity.info.InfoSource;
+import nl.tudelft.pds.granula.archiver.entity.info.RecordSource;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
 
+import javax.swing.text.TableView;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wing on 16-3-15.
  */
+@XmlRootElement(name="Visual")
+@XmlSeeAlso({Source.class})
 public class TableVisual extends Visual {
 
     String commonDescription;
     String specficDescription;
 
     List<TableCell> tblCells;
+
+    private TableVisual() {
+        super("unspecified", Identifier.TableVisual);
+    }
 
     public TableVisual(String name) {
         super(name, Identifier.TableVisual);
@@ -42,31 +52,22 @@ public class TableVisual extends Visual {
     }
 
 
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Visual type=\"%s\" name=\"%s\" uuid=\"%s\">", type, name, uuid));
-
-        stringBuilder.append("<TableCell>");
-        for (TableCell tblCell : tblCells) {
-            stringBuilder.append(tblCell.getSource().export());
-        }
-        stringBuilder.append("</TableCell>");
-
-        stringBuilder.append("</Visual>");
-        return stringBuilder.toString();
+    @XmlElementRef
+    public List<TableCell> getTblCells() {
+        return tblCells;
     }
 
-    public String exportBasic() {
-        return String.format("<Visual type=\"%s\" name=\"%s\" uuid=\"%s\">", type, name, uuid);
-    }
-
-    private class TableCell {
+    @XmlRootElement(name="TableCell")
+    private static class TableCell {
          Source source;
 
         public TableCell(Source source) {
             this.source = source;
         }
 
+        private TableCell() {}
+
+        @XmlElementRef
         public Source getSource() {
             return source;
         }

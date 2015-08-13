@@ -19,8 +19,8 @@ package nl.tudelft.pds.granula.archiver.entity.operation;
 import nl.tudelft.pds.granula.archiver.entity.info.Info;
 import nl.tudelft.pds.granula.archiver.entity.info.InfoSource;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
-import nl.tudelft.pds.granula.archiver.record.Record;
-import nl.tudelft.pds.granula.archiver.record.RecordInfo;
+import nl.tudelft.pds.granula.archiver.source.record.Record;
+import nl.tudelft.pds.granula.archiver.source.record.RecordInfo;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

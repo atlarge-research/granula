@@ -17,43 +17,42 @@
 package nl.tudelft.pds.granula.archiver.entity.visual;
 
 import nl.tudelft.pds.granula.archiver.entity.Identifier;
+import nl.tudelft.pds.granula.archiver.entity.info.InfoSource;
+import nl.tudelft.pds.granula.archiver.entity.info.RecordSource;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
+
+import javax.xml.bind.annotation.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by wing on 16-3-15.
  */
+@XmlRootElement(name="Visual")
+@XmlSeeAlso({Source.class})
 public class SummaryVisual extends Visual {
 
-    Source summarySource;
+    List<Source> summarySources;
+
+    private SummaryVisual() {
+        super("unspecified", Identifier.SummaryVisual);
+    }
 
     public SummaryVisual(String name) {
         super(name, Identifier.SummaryVisual);
+        summarySources = new ArrayList<>();
     }
 
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Visual type=\"%s\" name=\"%s\" uuid=\"%s\">", type, name, uuid));
 
-        stringBuilder.append("<SummarySource>");
-        stringBuilder.append(summarySource.export());
-        stringBuilder.append("</SummarySource>");
-
-        stringBuilder.append("<Sources>");
-        for (Source source : sources) {
-            stringBuilder.append(source.export());
-        }
-        stringBuilder.append("</Sources>");
-
-        stringBuilder.append("</Visual>");
-        return stringBuilder.toString();
+    @XmlElementWrapper(name="SummarySource")
+    @XmlElementRef
+    public List<Source> getSummarySources() {
+        return summarySources;
     }
 
-    public String exportBasic() {
-        return String.format("<Visual type=\"%s\" name=\"%s\" uuid=\"%s\">", type, name, uuid);
-    }
-
-    public void setSummarySource(Source summarySource) {
+    public void addSummarySources(Source summarySource) {
         sources.add(summarySource);
-        this.summarySource = summarySource;
+        summarySources.add(summarySource);
     }
+
 }

@@ -17,9 +17,17 @@
 package nl.tudelft.pds.granula.archiver.entity;
 
 import nl.tudelft.pds.granula.archiver.entity.info.Info;
+import nl.tudelft.pds.granula.archiver.entity.info.SummaryInfo;
+import nl.tudelft.pds.granula.archiver.entity.info.TimeSeries;
+import nl.tudelft.pds.granula.archiver.entity.info.TimeSeriesInfo;
+import nl.tudelft.pds.granula.archiver.entity.operation.Job;
+import nl.tudelft.pds.granula.archiver.entity.visual.SummaryVisual;
+import nl.tudelft.pds.granula.archiver.entity.visual.TableVisual;
+import nl.tudelft.pds.granula.archiver.entity.visual.TimeSeriesVisual;
 import nl.tudelft.pds.granula.archiver.entity.visual.Visual;
-import nl.tudelft.pds.granula.modeller.fundamental.model.Model;
+import nl.tudelft.pds.granula.modeller.model.Model;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,11 +36,13 @@ import java.util.Map;
 /**
  * Created by wing on 5-2-15.
  */
+@XmlAccessorType(XmlAccessType.NONE)
+@XmlSeeAlso({Info.class, Visual.class})
 public abstract class Entity extends Archivable {
 
     protected Map<String, Info> infos;
     protected Map<String, Visual> visuals;
-    public Model model;
+    protected Model model;
 
     public Entity() {
         super();
@@ -44,6 +54,8 @@ public abstract class Entity extends Archivable {
         infos.put(info.getName(), info);
     }
 
+    @XmlElementWrapper(name="Infos")
+    @XmlElementRef
     public List<Info> getInfos() {
         return new ArrayList<>(infos.values());
     }
@@ -65,6 +77,8 @@ public abstract class Entity extends Archivable {
         visuals.put(visual.getName(), visual);
     }
 
+    @XmlElementWrapper(name="Visuals")
+    @XmlElementRef
     public List<Visual> getVisuals() { return new ArrayList<>(visuals.values()); }
 
     public Model getModel() {
@@ -80,32 +94,6 @@ public abstract class Entity extends Archivable {
     public void loadRules() {
         model.loadRules();
     }
-
-    protected String exportInfos() {
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("<Infos>");
-        for (Info info : getInfos()) {
-            stringBuilder.append(info.export());
-        }
-        stringBuilder.append("</Infos>");
-
-        return stringBuilder.toString();
-    }
-
-    protected String exportVisuals() {
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<Visuals>");
-        for (Visual visual : getVisuals()) {
-            stringBuilder.append(visual.export());
-        }
-        stringBuilder.append("</Visuals>");
-
-        return stringBuilder.toString();
-    }
-
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + ' ' +getName();

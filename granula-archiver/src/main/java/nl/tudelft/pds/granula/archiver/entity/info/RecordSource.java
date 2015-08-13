@@ -16,14 +16,25 @@
 
 package nl.tudelft.pds.granula.archiver.entity.info;
 
-import nl.tudelft.pds.granula.archiver.record.Record;
+import nl.tudelft.pds.granula.archiver.source.record.Record;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 
 /**
  * Created by wing on 26-2-15.
  */
+@XmlRootElement(name="Source")
 public class RecordSource extends Source {
 
     String location;
+
+    public RecordSource() {
+        this.name = "unspecified";
+        this.type = "RecordSource";
+        location = "unspecified";
+    }
 
     public RecordSource(String name, Record record) {
         this.name = name;
@@ -31,14 +42,9 @@ public class RecordSource extends Source {
         this.location = record.getRecordLocation().getLocation();
     }
 
-    @Override
-    public String export() {
-        return exportBasic();
-    }
-
-    @Override
-    public String exportBasic() {
-        return String.format("<Source name=\"%s\" type=\"%s\" location=\"%s\" />", name, type, location);
+    @XmlAttribute
+    public String getLocation() {
+        return location;
     }
 
 }
