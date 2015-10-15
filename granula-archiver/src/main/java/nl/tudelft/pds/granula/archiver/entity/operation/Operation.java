@@ -18,14 +18,17 @@ package nl.tudelft.pds.granula.archiver.entity.operation;
 
 import nl.tudelft.pds.granula.archiver.entity.*;
 import nl.tudelft.pds.granula.archiver.entity.environment.Environment;
-import nl.tudelft.pds.granula.archiver.record.Record;
-import nl.tudelft.pds.granula.archiver.record.RecordInfo;
+import nl.tudelft.pds.granula.archiver.source.record.Record;
+import nl.tudelft.pds.granula.archiver.source.record.RecordInfo;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@XmlRootElement(name="Operation")
+@XmlSeeAlso({Actor.class, Mission.class})
 public class Operation extends Entity {
 
     public Job job;
@@ -52,6 +55,7 @@ public class Operation extends Entity {
         this.job = job;
     }
 
+    @XmlElementRef
     public Actor getActor() {
         return actor;
     }
@@ -60,6 +64,7 @@ public class Operation extends Entity {
         this.actor = actor;
     }
 
+    @XmlElementRef
     public Mission getMission() {
         return mission;
     }
@@ -88,6 +93,8 @@ public class Operation extends Entity {
         children.add(operation);
     }
 
+    @XmlElementWrapper(name="Children")
+    @XmlElementRef
     public List<Operation> getChildren() {
         return children;
     }
@@ -133,30 +140,5 @@ public class Operation extends Entity {
         return getType().equals(String.format("%s-%s", actorType, missionType));
     }
 
-    public String exportBasic() {
-        return String.format("<Operation uuid=\"%s\"></Operation>", uuid);
-    }
-
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Operation uuid=\"%s\" type=\"%s\" name=\"%s\">", uuid, getType(), getName()));
-
-
-        stringBuilder.append(actor.exportBasic());
-        stringBuilder.append(mission.exportBasic());
-
-        stringBuilder.append(exportInfos());
-        stringBuilder.append(exportVisuals());
-
-        stringBuilder.append("<Children>");
-        for (Operation child : children) {
-            stringBuilder.append(child.export());
-        }
-        stringBuilder.append("</Children>");
-
-
-        stringBuilder.append("</Operation>");
-        return stringBuilder.toString();
-    }
 
 }

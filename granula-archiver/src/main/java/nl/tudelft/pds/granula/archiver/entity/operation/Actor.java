@@ -18,9 +18,12 @@ package nl.tudelft.pds.granula.archiver.entity.operation;
 
 import nl.tudelft.pds.granula.archiver.entity.Entity;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlRootElement(name="Actor")
 public class Actor extends Entity {
 
     String id;
@@ -38,34 +41,12 @@ public class Actor extends Entity {
         operations = new ArrayList<>();
     }
 
-
-    public String exportBasic() {
-        return String.format("<Actor name=\"%s\" type=\"%s\" id=\"%s\" uuid=\"%s\" />", name, type, id, uuid);
+    public Actor() {
+        super();
+        children = new ArrayList<>();
+        operations = new ArrayList<>();
     }
 
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Actor name=\"%s\" type=\"%s\" id=\"%s\" uuid=\"%s\">", name, type, id, uuid));
-
-        stringBuilder.append(exportInfos());
-        stringBuilder.append(exportVisuals());
-
-        stringBuilder.append("<Operations>");
-        for (Operation operation : getOperations()) {
-            stringBuilder.append(operation.exportBasic());
-        }
-        stringBuilder.append("</Operations>");
-
-        stringBuilder.append("<Children>");
-        for (Actor child : children) {
-            stringBuilder.append(child.export());
-        }
-        stringBuilder.append("</Children>");
-
-
-        stringBuilder.append("</Actor>");
-        return stringBuilder.toString();
-    }
 
     public List<Operation> getOperations() {
         return operations;
@@ -77,7 +58,7 @@ public class Actor extends Entity {
 
 
 
-
+    @XmlAttribute
     public String getId() {
         return id;
     }

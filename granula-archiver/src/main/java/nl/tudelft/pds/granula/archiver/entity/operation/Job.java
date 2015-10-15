@@ -18,14 +18,17 @@ package nl.tudelft.pds.granula.archiver.entity.operation;
 
 import nl.tudelft.pds.granula.archiver.entity.Entity;
 import nl.tudelft.pds.granula.archiver.entity.environment.Environment;
-import nl.tudelft.pds.granula.archiver.record.JobRecord;
+import nl.tudelft.pds.granula.archiver.source.record.JobRecord;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wing on 12-3-15.
  */
+@XmlRootElement(name="Job")
+@XmlSeeAlso({Operation.class})
 public class Job extends Entity {
 
     JobRecord jobRecord;
@@ -34,6 +37,7 @@ public class Job extends Entity {
     Mission topMission;
     Environment environment;
     List<Operation> memberOperations;
+    List<Operation> operations;
 
     public Job() {
         super();
@@ -46,6 +50,18 @@ public class Job extends Entity {
         setTopActor(topActor);
         setTopMission(topMission);
         setEnvironment(environment);
+    }
+
+    public void fillOperation() {
+        operations = new ArrayList<>();
+        operations.add(topOperation);
+    }
+
+
+    @XmlElementWrapper(name="Operations")
+    @XmlElementRef
+    public List<Operation> getOperations() {
+        return operations;
     }
 
     public JobRecord getJobRecord() {
@@ -78,6 +94,16 @@ public class Job extends Entity {
         return operation;
     }
 
+    public List<Operation> findOperations(String actorType, String missionType) {
+        List<Operation> operations = new ArrayList<>();
+        for (Operation memberOperation : memberOperations) {
+            if(memberOperation.hasType(actorType, missionType)) {
+                operations.add(memberOperation);
+            }
+        }
+        return operations;
+    }
+
     public Operation getTopOperation() {
         return topOperation;
     }
@@ -108,36 +134,6 @@ public class Job extends Entity {
 
     public void setEnvironment(Environment environment) {
         this.environment = environment;
-    }
-
-    public String exportBasic() {
-        return String.format("<Job uuid=\"%s\"></Job>", uuid);
-    }
-
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Job uuid=\"%s\">", uuid));
-
-        stringBuilder.append("<Operations>");
-        stringBuilder.append(topOperation.export());
-        stringBuilder.append("</Operations>");
-
-        stringBuilder.append("<Actors>");
-        stringBuilder.append(topActor.export());
-        stringBuilder.append("</Actors>");
-
-        stringBuilder.append("<Missions>");
-        stringBuilder.append(topMission.export());
-        stringBuilder.append("</Missions>");
-
-//        stringBuilder.append(environment.export());
-
-        stringBuilder.append(exportInfos());
-        stringBuilder.append(exportVisuals());
-
-
-        stringBuilder.append("</Job>");
-        return stringBuilder.toString();
     }
 
 }

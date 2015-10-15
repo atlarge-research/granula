@@ -16,15 +16,17 @@
 
 package nl.tudelft.pds.granula.modeller.graphx.job;
 
+import nl.tudelft.pds.granula.archiver.entity.info.BasicInfo;
 import nl.tudelft.pds.granula.archiver.entity.info.Info;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
 import nl.tudelft.pds.granula.archiver.entity.operation.Job;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
-import nl.tudelft.pds.granula.modeller.fundamental.model.job.JobModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.DerivationRule;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.filling.UniqueOperationFilling;
+import nl.tudelft.pds.granula.modeller.model.job.JobModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.DerivationRule;
+import nl.tudelft.pds.granula.modeller.rule.filling.UniqueOperationFilling;
 import nl.tudelft.pds.granula.modeller.graphx.GraphXType;
 import nl.tudelft.pds.granula.modeller.graphx.operation.*;
+import nl.tudelft.pds.granula.modeller.rule.extraction.GraphXExtractionRule;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,7 +64,6 @@ public class GraphX extends JobModel {
     }
 
     public void loadRules() {
-        super.loadRules();
 
         addFillingRule(new UniqueOperationFilling(2, GraphXType.TopActor, GraphXType.TopMission));
         addFillingRule(new UniqueOperationFilling(2, GraphXType.Coordinator, GraphXType.Setup));
@@ -72,6 +73,7 @@ public class GraphX extends JobModel {
         addFillingRule(new UniqueOperationFilling(2, GraphXType.SparkApplication, GraphXType.Execution));
 
         addInfoDerivation(new JobNameDerivationRule(4));
+        addExtraction(new GraphXExtractionRule(1));
     }
 
 
@@ -84,32 +86,37 @@ public class GraphX extends JobModel {
         @Override
         public boolean execute() {
 
-                Job job = (Job) entity;
+            Job job = (Job) entity;
 
-                Operation topOperation = null;
-                for(Operation operation: job.getMemberOperations()) {
-                    if(operation.hasType(GraphXType.TopActor, GraphXType.TopMission)) {
-                        topOperation = operation;
-                    }
+            Operation topOperation = null;
+            for (Operation operation : job.getMemberOperations()) {
+                if (operation.hasType(GraphXType.TopActor, GraphXType.TopMission)) {
+                    topOperation = operation;
                 }
+            }
 
-                Info executorSize = topOperation.getInfo("ExecutorSize");
-                Info executorMemory = topOperation.getInfo("ExecutorMemory");
+            Info executorSize = topOperation.getInfo("ExecutorSize");
+            Info executorMemory = topOperation.getInfo("ExecutorMemory");
 
-                Info computeClass = topOperation.getInfo("ApplicationName");
-                Info dataInputPath = topOperation.getInfo("DataInputPath");
+            Info computeClass = topOperation.getInfo("ApplicationName");
+            Info dataInputPath = topOperation.getInfo("DataInputPath");
 
-                String fileName = new File(dataInputPath.getValue()).getName().replace("_FCF", "");
+            String fileName = new File(dataInputPath.getValue()).getName().replace("_FCF", "");
 
-                String jobName = String.format("Job[%s-%s, %sx%sMB]",
-                        computeClass.getValue().replace("Computation", ""), fileName,
-                        executorSize.getValue(), executorMemory.getValue());
+            String jobName = String.format("%s-%s, %sx%sMB",
+                    computeClass.getValue().replace("Computation", ""), fileName,
+                    executorSize.getValue(), executorMemory.getValue());
 
 
-                Info jobNameInfo = new Info("JobName");
-                jobNameInfo.addInfo(jobName, new ArrayList<Source>());
-                job.addInfo(jobNameInfo);
-                return  true;
+            BasicInfo jobNameInfo = new BasicInfo("JobName");
+            jobNameInfo.addInfo(jobName, new ArrayList<Source>());
+            job.addInfo(jobNameInfo);
+
+
+            job.setName(jobName);
+            job.setType("GraphX");
+
+            return true;
 
         }
     }

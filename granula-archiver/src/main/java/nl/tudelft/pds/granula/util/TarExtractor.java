@@ -25,33 +25,6 @@ import org.apache.commons.io.FileUtils;
 
 public class TarExtractor {
 
-    public static void main(String[] args) throws IOException {
-
-        String workloadName = "Workload20150130004448";
-        String tarFilePath = String.format("%s.tar.gz", workloadName);
-        String outputDir = "/tmp/Granula/Log/" + workloadName;
-        File outputDirFile = new File(outputDir);
-        FileUtils.deleteDirectory(outputDirFile);
-        outputDirFile.mkdirs();
-        TarExtractor tarExtractor = new TarExtractor();
-        tarExtractor.extract(tarFilePath, outputDir);
-
-        String gangliaTarFile = String.format("%s/%s_GangliaLog.tar.gz", outputDir, workloadName);
-        String gangliaOutputDir = String.format("%s/GangliaLog", outputDir);
-        tarExtractor.extract(gangliaTarFile, gangliaOutputDir);
-        FileUtils.forceDelete(new File(gangliaTarFile));
-
-        String yarnTarFile = String.format("%s/%s_YarnLog.tar.gz", outputDir, workloadName);
-        String yarnOutputDir = String.format("%s/YarnLog", outputDir);
-        tarExtractor.extract(yarnTarFile,yarnOutputDir);
-        FileUtils.forceDelete(new File(yarnTarFile));
-
-        String runnerTarFile = String.format("%s/%s_RunnerLog.tar.gz", outputDir, workloadName);
-        String runnerOutputDir = String.format("%s/RunnerLog", outputDir);
-        tarExtractor.extract(runnerTarFile,runnerOutputDir);
-        FileUtils.forceDelete(new File(runnerTarFile));
-    }
-
     public void extract(String tarFilePath, String outputDir) {
 
         try {

@@ -16,19 +16,18 @@
 
 package nl.tudelft.pds.granula.modeller.graphx.operation;
 
-import nl.tudelft.pds.granula.archiver.entity.info.Info;
-import nl.tudelft.pds.granula.archiver.entity.info.InfoSource;
-import nl.tudelft.pds.granula.archiver.entity.info.Source;
-import nl.tudelft.pds.granula.archiver.entity.info.SummaryInfo;
+import nl.tudelft.pds.granula.archiver.entity.info.*;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
-import nl.tudelft.pds.granula.modeller.fundamental.model.operation.AbstractOperationModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.*;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.time.DurationDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.time.FilialEndTimeDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.time.FilialStartTimeDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.linking.EmptyLinking;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.MainInfoTableVisualization;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.visual.TableVisualization;
+import nl.tudelft.pds.granula.modeller.model.operation.AbstractOperationModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.DerivationRule;
+import nl.tudelft.pds.granula.modeller.rule.derivation.FilialStringDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.time.DurationDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.time.FilialEndTimeDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.time.FilialStartTimeDerivation;
+import nl.tudelft.pds.granula.modeller.rule.linking.EmptyLinking;
+import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
+import nl.tudelft.pds.granula.modeller.rule.visual.TableVisualization;
 import nl.tudelft.pds.granula.modeller.graphx.GraphXType;
 
 import java.text.SimpleDateFormat;
@@ -140,7 +139,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             List<Source> sources = new ArrayList<>();
             sources.add(new InfoSource(startTimeInfo.getName(), startTimeInfo));
 
-            Info jobStartTimeInfo = new Info("JobStartTime");
+            BasicInfo jobStartTimeInfo = new BasicInfo("JobStartTime");
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
             jobStartTimeInfo.setDescription(String.format("The [%s] is the time when this job is started", jobStartTimeInfo.getName()));
             jobStartTimeInfo.addInfo(String.valueOf(dateFormat.format(new Date(Long.parseLong(startTimeInfo.getValue())))), new ArrayList<Source>());
@@ -160,7 +159,7 @@ public class TopActorTopMission extends AbstractOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
 
-            Info archivingTimeInfo = new Info("ArchivingTime");
+            BasicInfo archivingTimeInfo = new BasicInfo("ArchivingTime");
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
             archivingTimeInfo.setDescription(String.format("The [%s] is the time when this performance archive is created", archivingTimeInfo.getName()));
             archivingTimeInfo.addInfo(String.valueOf(dateFormat.format(new Date(System.currentTimeMillis()))), new ArrayList<Source>());
@@ -196,13 +195,13 @@ public class TopActorTopMission extends AbstractOperationModel {
             if(bspDurationInfo != null) {
                 sources.add(new InfoSource(bspDurationInfo.getName(), bspDurationInfo));
 
-                Info bspTimeInfo = new Info("BspTime");
+                BasicInfo bspTimeInfo = new BasicInfo("BspTime");
                 long bspTime = Long.parseLong(bspDurationInfo.getValue());
                 bspTimeInfo.setDescription(String.format("The [%s] is the execution time used for the actual BSP supersteps. ", bspTimeInfo.getName()));
                 bspTimeInfo.addInfo(String.valueOf(bspTime), sources);
                 operation.addInfo(bspTimeInfo);
             } else {
-                Info bspTimeInfo = new Info("BspTime");
+                BasicInfo bspTimeInfo = new BasicInfo("BspTime");
                 bspTimeInfo.setDescription(String.format("The [%s] is the execution time used for the actual BSP supersteps. ", bspTimeInfo.getName()));
                 bspTimeInfo.addInfo(String.valueOf(0), new ArrayList<Source>());
                 operation.addInfo(bspTimeInfo);
@@ -231,7 +230,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource(bspTimeInfo.getName(), bspTimeInfo));
             sources.add(new InfoSource("TotalDuration", totalDurationInfo));
 
-            Info bspRatioInfo = new Info("BspRatio");
+            BasicInfo bspRatioInfo = new BasicInfo("BspRatio");
             double bspRatio = Long.parseLong(bspTimeInfo.getValue()) * 1.0d / Long.parseLong(totalDurationInfo.getValue());
             bspRatioInfo.setDescription(String.format("The [%s] is the proportion of the total execution time used for the actual BSP supersteps, " +
                     "which is equal to [%s] / [%s].", bspRatioInfo.getName(), sources.get(0).getName(), sources.get(1).getName()));
@@ -263,7 +262,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource(allocDurationInfo.getName(), allocDurationInfo));
             sources.add(new InfoSource("TotalDuration", totalDurationInfo));
 
-            Info allocRatioInfo = new Info("ResourceAllocRatio");
+            BasicInfo allocRatioInfo = new BasicInfo("ResourceAllocRatio");
             double allocRatio = (Long.parseLong(allocDurationInfo.getValue()) * 1.0d) / Long.parseLong(totalDurationInfo.getValue());
             allocRatioInfo.addInfo(String.valueOf(String.format("%.2f", allocRatio)), sources);
             allocRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for resource allocation, " +
@@ -303,7 +302,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource("DeploymentDuration", deploymentDurationInfo));
             sources.add(new InfoSource("UndeploymentDuration", undeploymentDurationInfo));
 
-            Info allocTimeInfo = new Info("ResourceAllocTime");
+            BasicInfo allocTimeInfo = new BasicInfo("ResourceAllocTime");
             long allocRatio = Long.parseLong(deploymentDurationInfo.getValue()) + Long.parseLong(undeploymentDurationInfo.getValue());
             allocTimeInfo.addInfo(String.valueOf(allocRatio), sources);
             allocTimeInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for resource allocation, " +
@@ -334,7 +333,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource(coordTimeInfo.getName(), coordTimeInfo));
             sources.add(new InfoSource("TotalDuration", totalDurationInfo));
 
-            Info coordRatioInfo = new Info("CoordinationRatio");
+            BasicInfo coordRatioInfo = new BasicInfo("CoordinationRatio");
             double allocRatio = (Long.parseLong(coordTimeInfo.getValue()) * 1.0d) / Long.parseLong(totalDurationInfo.getValue());
             coordRatioInfo.addInfo(String.valueOf(String.format("%.2f", allocRatio)), sources);
             coordRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for BSP coordination, " +
@@ -378,7 +377,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource("BspSetupDuration", bspSetupDurationInfo));
             sources.add(new InfoSource("BspCleanupDuration", bspCleanupDurationInfo));
 
-            Info allocTimeInfo = new Info("CoordinationTime");
+            BasicInfo allocTimeInfo = new BasicInfo("CoordinationTime");
             long allocRatio = Long.parseLong(bspSetupDurationInfo.getValue()) + Long.parseLong(bspCleanupDurationInfo.getValue());
             allocTimeInfo.addInfo(String.valueOf(allocRatio), sources);
             allocTimeInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for BSP coordination, " +
@@ -411,7 +410,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource(ioTimeInfo.getName(), ioTimeInfo));
             sources.add(new InfoSource("TotalDuration", totalDurationInfo));
 
-            Info coordRatioInfo = new Info("IORatio");
+            BasicInfo coordRatioInfo = new BasicInfo("IORatio");
             double allocRatio = (Long.parseLong(ioTimeInfo.getValue()) * 1.0d) / Long.parseLong(totalDurationInfo.getValue());
             coordRatioInfo.addInfo(String.valueOf(String.format("%.2f", allocRatio)), sources);
             coordRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for IO, " +
@@ -454,7 +453,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource("DataLoadTime", dataLoadDuration));
             sources.add(new InfoSource("DataOffloadTime", dataOffloadTimeInfo));
 
-            Info ioTimeInfo = new Info("IOTime");
+            BasicInfo ioTimeInfo = new BasicInfo("IOTime");
             long allocRatio = Long.parseLong(dataLoadDuration.getValue()) + Long.parseLong(dataOffloadTimeInfo.getValue());
             ioTimeInfo.addInfo(String.valueOf(allocRatio), sources);
             ioTimeInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for IO, " +

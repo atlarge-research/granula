@@ -19,10 +19,10 @@ package nl.tudelft.pds.granula.modeller.giraph.operation;
 import nl.tudelft.pds.granula.archiver.entity.info.Source;
 import nl.tudelft.pds.granula.archiver.entity.info.SummaryInfo;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.BasicSummaryDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.model.operation.ConcreteOperationModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.ColorDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.linking.UniqueParentLinking;
+import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
+import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.ColorDerivation;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 
 import java.util.ArrayList;

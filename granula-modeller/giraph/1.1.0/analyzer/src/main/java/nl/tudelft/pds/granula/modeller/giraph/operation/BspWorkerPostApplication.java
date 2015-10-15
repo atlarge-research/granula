@@ -16,9 +16,9 @@
 
 package nl.tudelft.pds.granula.modeller.giraph.operation;
 
-import nl.tudelft.pds.granula.modeller.fundamental.model.operation.ConcreteOperationModel;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.ColorDerivation;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.linking.UniqueParentLinking;
+import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.ColorDerivation;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 
 public class BspWorkerPostApplication extends ConcreteOperationModel {

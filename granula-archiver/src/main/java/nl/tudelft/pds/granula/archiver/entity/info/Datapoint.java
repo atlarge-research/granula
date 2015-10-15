@@ -16,10 +16,13 @@
 
 package nl.tudelft.pds.granula.archiver.entity.info;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 public class Datapoint {
     long timestamp;
     double value;
 
+    @XmlAttribute(name="t")
     public long getTimestamp() {
         return timestamp;
     }
@@ -28,6 +31,7 @@ public class Datapoint {
         this.timestamp = timestamp;
     }
 
+    @XmlAttribute(name="v")
     public double getValue() {
         return value;
     }

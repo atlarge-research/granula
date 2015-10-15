@@ -16,6 +16,7 @@
 
 package nl.tudelft.pds.granula.archiver.entity.info;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +24,8 @@ import java.util.List;
 
 public class TimeSeries {
     List<Datapoint> datapoints;
+
+
 
     public TimeSeries() {
         this.datapoints = new ArrayList<>();
@@ -76,6 +79,7 @@ public class TimeSeries {
         return filteredTimeSeries;
     }
 
+    @XmlElement(name="Data")
     public List<Datapoint> getDatapoints() {
         return datapoints;
     }

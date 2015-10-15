@@ -75,24 +75,24 @@ public class Environment extends Entity {
     }
 
 
-    public String exportBasic() {
-        return String.format("<Environment name=\"%s\" uuid=\"%s\">", name, uuid);
-    }
-
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Environment name=\"%s\" uuid=\"%s\">", name, uuid));
-
-        stringBuilder.append("<ComputationNodes>");
-        for (ComputationNode computationNode : getNodes()) {
-            stringBuilder.append(computationNode.export());
-        }
-        stringBuilder.append("</ComputationNodes>");
-
-        stringBuilder.append(exportInfos());
-        stringBuilder.append(exportVisuals());
-
-        stringBuilder.append("</Environment>");
-        return stringBuilder.toString();
-    }
+//    public String exportBasic() {
+//        return String.format("<Environment name=\"%s\" uuid=\"%s\">", name, uuid);
+//    }
+//
+//    public String export() {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append(String.format("<Environment name=\"%s\" uuid=\"%s\">", name, uuid));
+//
+//        stringBuilder.append("<ComputationNodes>");
+//        for (ComputationNode computationNode : getNodes()) {
+//            stringBuilder.append(computationNode.export());
+//        }
+//        stringBuilder.append("</ComputationNodes>");
+//
+//        stringBuilder.append(exportInfos());
+//        stringBuilder.append(exportVisuals());
+//
+//        stringBuilder.append("</Environment>");
+//        return stringBuilder.toString();
+//    }
 }

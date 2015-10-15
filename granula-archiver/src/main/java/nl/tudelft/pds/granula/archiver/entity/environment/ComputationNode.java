@@ -68,24 +68,24 @@ public class ComputationNode extends Entity {
         infos.put(timeSeriesInfo.getName(), timeSeriesInfo);
     }
 
-    public String exportBasic() {
-        return String.format("<ComputationNode name=\"%s\" uuid=\"%s\" />", name, uuid);
-    }
-
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<ComputationNode name=\"%s\" uuid=\"%s\">", name, uuid));
-
-        stringBuilder.append("<Processes>");
-        for (Process process : getProcesses()) {
-            stringBuilder.append(process.export());
-        }
-        stringBuilder.append("</Processes>");
-
-        stringBuilder.append(exportInfos());
-        stringBuilder.append(exportVisuals());
-
-        stringBuilder.append("</ComputationNode>");
-        return stringBuilder.toString();
-    }
+//    public String exportBasic() {
+//        return String.format("<ComputationNode name=\"%s\" uuid=\"%s\" />", name, uuid);
+//    }
+//
+//    public String export() {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append(String.format("<ComputationNode name=\"%s\" uuid=\"%s\">", name, uuid));
+//
+//        stringBuilder.append("<Processes>");
+//        for (Process process : getProcesses()) {
+//            stringBuilder.append(process.export());
+//        }
+//        stringBuilder.append("</Processes>");
+//
+//        stringBuilder.append(exportInfos());
+//        stringBuilder.append(exportVisuals());
+//
+//        stringBuilder.append("</ComputationNode>");
+//        return stringBuilder.toString();
+//    }
 }

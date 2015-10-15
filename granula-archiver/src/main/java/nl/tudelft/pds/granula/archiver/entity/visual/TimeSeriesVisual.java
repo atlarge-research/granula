@@ -18,17 +18,17 @@ package nl.tudelft.pds.granula.archiver.entity.visual;
 
 import nl.tudelft.pds.granula.archiver.entity.Archivable;
 import nl.tudelft.pds.granula.archiver.entity.Identifier;
-import nl.tudelft.pds.granula.archiver.entity.info.Info;
-import nl.tudelft.pds.granula.archiver.entity.info.InfoSource;
-import nl.tudelft.pds.granula.archiver.entity.info.Source;
-import nl.tudelft.pds.granula.archiver.entity.info.TimeSeriesInfo;
+import nl.tudelft.pds.granula.archiver.entity.info.*;
 
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wing on 16-3-15.
  */
+@XmlRootElement(name="Visual")
+@XmlSeeAlso({Source.class})
 public class TimeSeriesVisual extends Visual {
 
     String title;
@@ -36,39 +36,34 @@ public class TimeSeriesVisual extends Visual {
     Axis y1Axis;
     Axis y2Axis;
 
+    private TimeSeriesVisual() {
+        super("unspecified", Identifier.TimeSeriesVisual);
+    }
+
+
     public TimeSeriesVisual(String name) {
         super(name, Identifier.TimeSeriesVisual);
         title = "Unspecified Title";
     }
 
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Visual type=\"%s\" name=\"%s\" uuid=\"%s\">", type, name, uuid));
-
-        stringBuilder.append(String.format("<Title>%s</Title>", title));
-
-        if((y1Axis == null && y2Axis == null) || xAxis == null) {
-            System.out.println("One of the axes are not initialized.");
-            throw new IllegalStateException();
-        }
-        stringBuilder.append(xAxis.export());
-        stringBuilder.append(y1Axis.export());
-        if(y2Axis != null) {
-            stringBuilder.append(y2Axis.export());
-        }
-
-        stringBuilder.append("<Sources>");
-        for (Source source : sources) {
-            stringBuilder.append(source.export());
-        }
-        stringBuilder.append("</Sources>");
-
-        stringBuilder.append("</Visual>");
-        return stringBuilder.toString();
+    @XmlElement(name="Title")
+    public String getTitle() {
+        return title;
     }
 
-    public String exportBasic() {
-        return String.format("<Visual type=\"%s\" name=\"%s\" uuid=\"%s\" />", type, name, uuid);
+    @XmlElement(name="Axis")
+    public Axis getXAxis() {
+        return xAxis;
+    }
+
+    @XmlElement(name="Axis")
+    public Axis getY1Axis() {
+        return y1Axis;
+    }
+
+    @XmlElement(name="Axis")
+    public Axis getY2Axis() {
+        return y2Axis;
     }
 
     public void setTitle(String title) {
@@ -111,7 +106,8 @@ public class TimeSeriesVisual extends Visual {
         this.y2Axis.addTimeSeriesInfo(timeSeriesInfo);
     }
 
-    private class Axis extends Archivable {
+    @XmlRootElement(name="Axis")
+    private static class Axis extends Archivable {
 
         String title;
         String unit;
@@ -119,6 +115,14 @@ public class TimeSeriesVisual extends Visual {
         String endValue;
         boolean isDynamic;
         List<Source> tsSources;
+
+        private Axis() {
+            this.type = "unspecified";
+            this.title = "unspecified";
+            this.unit = "unspecified";
+            isDynamic = true;
+            tsSources = new ArrayList<>();
+        }
 
         public Axis(String type, String title, String unit) {
             this.type = type;
@@ -138,51 +142,36 @@ public class TimeSeriesVisual extends Visual {
             tsSources = new ArrayList<>();
         }
 
+        @XmlElement(name="Title")
         public String getTitle() {
             return title;
         }
 
+        @XmlElement(name="Unit")
         public String getUnit() {
             return unit;
         }
 
+        @XmlElement(name="StartValue")
         public String getStartValue() {
             return startValue;
         }
 
+        @XmlElement(name="EndValue")
         public String getEndValue() {
             return endValue;
+        }
+
+        @XmlElementWrapper(name="TimeSeriesSources")
+        @XmlElementRef
+        public List<Source> getTsSources() {
+            return tsSources;
         }
 
         public void addTimeSeriesInfo(TimeSeriesInfo timeSeriesInfo) {
             List<Info> sourceInfos = new ArrayList<>();
             sourceInfos.add(timeSeriesInfo);
             this.tsSources.add(new InfoSource("TimeSeries Info", timeSeriesInfo));
-        }
-
-        @Override
-        public String export() {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(String.format("<Axis type=\"%s\" >", type));
-
-            stringBuilder.append(String.format("<Title>%s</Title>", title));
-            stringBuilder.append(String.format("<Unit>%s</Unit>", unit));
-            stringBuilder.append(String.format("<StartValue>%s</StartValue>", startValue));
-            stringBuilder.append(String.format("<EndValue>%s</EndValue>", endValue));
-
-            stringBuilder.append("<TimeSeriesSources>");
-            for (Source tsSource : tsSources) {
-                stringBuilder.append(tsSource.export());
-            }
-            stringBuilder.append("</TimeSeriesSources>");
-
-            stringBuilder.append("</Axis>");
-            return stringBuilder.toString();
-        }
-
-        @Override
-        public String exportBasic() {
-            return String.format("<Axis type=\"%s\" />", type);
         }
     }
 }

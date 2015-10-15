@@ -16,14 +16,7 @@
 
 package nl.tudelft.pds.granula.util;
 
-import nl.tudelft.pds.granula.modeller.fundamental.rule.assembling.AssemblingRule;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.derivation.DerivationRule;
-import nl.tudelft.pds.granula.modeller.fundamental.rule.filling.FillingRule;
-import nl.tudelft.pds.granula.modeller.fundamental.model.operation.OperationModel;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import nl.tudelft.pds.granula.modeller.model.operation.OperationModel;
 
 public class OperationModelViewer {
 

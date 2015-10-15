@@ -18,16 +18,22 @@ package nl.tudelft.pds.granula.archiver.entity.info;
 
 import nl.tudelft.pds.granula.archiver.entity.Identifier;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * Created by wing on 26-2-15.
  */
+@XmlRootElement(name="Info")
 public class TimeSeriesInfo extends Info {
 
     TimeSeries timeSeries;
     String metricUnit;
 
+    public TimeSeriesInfo() {
+        this("unspecified");
+    }
 
     public TimeSeriesInfo(String name) {
         super(name, Identifier.TimeSeriesInfo);
@@ -49,6 +55,7 @@ public class TimeSeriesInfo extends Info {
         addSource(source);
     }
 
+    @XmlElement(name="TimeSeries")
     public TimeSeries getTimeSeries() {
         return timeSeries;
     }
@@ -65,24 +72,5 @@ public class TimeSeriesInfo extends Info {
         this.metricUnit = metricUnit;
     }
 
-    public String export() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(String.format("<Info name=\"%s\" value=\"%s\" type=\"%s\" uuid=\"%s\">", name, value, type, uuid));
 
-        stringBuilder.append(String.format("<Description>%s</Description>", description));
-
-        stringBuilder.append("<Sources>");
-        for (Source source : sources) {
-            source.export();
-        }
-        stringBuilder.append("</Sources>");
-
-        stringBuilder.append(String.format("<MetricUnit>%s</MetricUnit>", metricUnit));
-        for (Datapoint datapoint : timeSeries.getDatapoints()) {
-            stringBuilder.append(String.format("<Data t=\"%s\" v=\"%f\" />", datapoint.getTimestamp(), datapoint.getValue()));
-        }
-
-        stringBuilder.append("</Info>");
-        return stringBuilder.toString();
-    }
 }
