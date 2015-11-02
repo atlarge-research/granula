@@ -22,7 +22,10 @@ import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
 import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.RecordInfoDerivation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.RecordTimeSeriesDerivation;
+import nl.tudelft.pds.granula.modeller.rule.filling.UniqueIdOperationFilling;
+import nl.tudelft.pds.granula.modeller.rule.filling.UniqueOperationFilling;
 import nl.tudelft.pds.granula.modeller.rule.linking.IdentifierParentLinking;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
 import nl.tudelft.pds.granula.modeller.rule.visual.TimeSeriesVisualization;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
@@ -37,7 +40,7 @@ public class BspWorkerComputation extends ConcreteOperationModel {
 
     public void loadRules() {
         super.loadRules();
-        addLinkingRule(new IdentifierParentLinking(GiraphType.GlobalCoordinator, GiraphType.Unique, GiraphType.GlobalSuperstep, GiraphType.Equal));
+        addLinkingRule(new IdentifierParentLinking(GiraphType.BspWorker, GiraphType.Equal, GiraphType.Superstep, GiraphType.Equal));
 //         RecordInfoDerivation receivedMsgReqsVolume = new RecordInfoDerivation(1, "ReceivedMsgReqsVolume");
 //        addInfoDerivation(receivedMsgReqsVolume);
 //        receivedMsgReqsVolume.setDescription("[ReceivedMsgReqsVolume] is the volume of all worker message requests received by a BspWorker in a superstep. " +

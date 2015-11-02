@@ -128,6 +128,7 @@ public class Job extends Entity {
         this.topMission = topMission;
     }
 
+    @XmlElementRef
     public Environment getEnvironment() {
         return environment;
     }

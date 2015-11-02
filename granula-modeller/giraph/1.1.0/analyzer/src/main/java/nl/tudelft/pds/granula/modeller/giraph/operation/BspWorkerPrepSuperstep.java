@@ -20,9 +20,11 @@ import nl.tudelft.pds.granula.archiver.entity.info.Source;
 import nl.tudelft.pds.granula.archiver.entity.info.SummaryInfo;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
+import nl.tudelft.pds.granula.modeller.rule.filling.UniqueIdOperationFilling;
 import nl.tudelft.pds.granula.modeller.rule.linking.IdentifierParentLinking;
 import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
 import nl.tudelft.pds.granula.modeller.rule.derivation.ColorDerivation;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 
@@ -36,7 +38,8 @@ public class BspWorkerPrepSuperstep extends ConcreteOperationModel {
 
     public void loadRules() {
         super.loadRules();
-        addLinkingRule(new IdentifierParentLinking(GiraphType.GlobalCoordinator, GiraphType.Unique, GiraphType.GlobalSuperstep, GiraphType.Equal));
+        addFillingRule(new UniqueIdOperationFilling(1, GiraphType.BspWorker, GiraphType.Superstep));
+        addLinkingRule(new IdentifierParentLinking(GiraphType.BspWorker, GiraphType.Equal, GiraphType.Superstep, GiraphType.Equal));
         addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
 //         RecordInfoDerivation receivedMsgReqsVolume = new RecordInfoDerivation(1, "ReceivedMsgReqsVolume");
 //        addInfoDerivation(receivedMsgReqsVolume);

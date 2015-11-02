@@ -1,6 +1,5 @@
 package nl.tudelft.pds.granula.archiver.source;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -8,12 +7,12 @@ import java.util.List;
  */
 public abstract class DataSource extends Source {
 
-    List<InputStream> inputStreams;
+    List<DataStream> dataStreams;
 
     public abstract void verify();
     public abstract void load();
 
-    public List<InputStream> getInputStreams() {
-        return inputStreams;
+    public List<DataStream> getDataStreams() {
+        return dataStreams;
     }
 }

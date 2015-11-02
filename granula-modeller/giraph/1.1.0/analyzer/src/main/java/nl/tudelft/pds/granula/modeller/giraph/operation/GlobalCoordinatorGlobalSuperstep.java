@@ -19,10 +19,8 @@ package nl.tudelft.pds.granula.modeller.giraph.operation;
 import nl.tudelft.pds.granula.archiver.entity.info.*;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.*;
-import nl.tudelft.pds.granula.modeller.rule.derivation.time.FilialEndTimeDerivation;
 import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
-import nl.tudelft.pds.granula.modeller.rule.derivation.time.FilialStartTimeDerivation;
-import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
+import nl.tudelft.pds.granula.modeller.rule.linking.IdentifierParentLinking;
 import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
 import nl.tudelft.pds.granula.modeller.rule.visual.TableVisualization;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
@@ -39,7 +37,8 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
     public void loadRules() {
         super.loadRules();
 
-        addLinkingRule(new UniqueParentLinking(GiraphType.BspMaster, GiraphType.BspIteration));
+//        addLinkingRule(new UniqueParentLinking(GiraphType.BspMaster, GiraphType.BspIteration));
+        addLinkingRule(new IdentifierParentLinking(GiraphType.BspWorker, "M", GiraphType.MasterTask, GiraphType.Unique));
 
         RecordInfoDerivation totalNumVertices = new RecordInfoDerivation(1, "TotalNumVertices", "Vertices");
         addInfoDerivation(totalNumVertices);
@@ -49,17 +48,14 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
         addInfoDerivation(totalNumEdges);
         totalNumEdges.setDescription("[TotalNumEdges] is the global vertex count. This metric is already included in the standard implementation of Giraph.");
 
+        addInfoDerivation(new SuperstepLongAggregationDerivation(4, "SentMsgs", "SentMsgs"));
+        addInfoDerivation(new SuperstepLongAggregationDerivation(4, "ActiveVertices", "ActiveVertices"));
 
-        addInfoDerivation(new FilialStartTimeDerivation(2));
-        addInfoDerivation(new FilialEndTimeDerivation(2));
-        addInfoDerivation(new FilialLongAggregationDerivation(3, GiraphType.PostSuperstep, "SentMsgs", "SentMsgs"));
-        addInfoDerivation(new FilialLongAggregationDerivation(3, GiraphType.PostSuperstep, "ActiveVertices", "ActiveVertices"));
-
-        addInfoDerivation(new FilialLongAggregationDerivation(3, GiraphType.PostSuperstep, "SentMsgVolume", "SentMsgVolume"));
-        addInfoDerivation(new FilialLongAggregationDerivation(3, GiraphType.PostSuperstep, "ReceivedMsgVolume", "ReceivedMsgVolume"));
-        addInfoDerivation(new FilialLongAggregationDerivation(3, GiraphType.PostSuperstep, "LocalMsgVolume", "LocalMsgVolume"));
-        addInfoDerivation(new FilialLongAggregationDerivation(3, GiraphType.PostSuperstep, "RemoteMsgVolume", "RemoteMsgVolume"));
-        addInfoDerivation(new FilialLongMaxDerivation(3, GiraphType.PostSuperstep, "ReceivedMsgVolume", "MaxReceivedMsgVolume"));
+        addInfoDerivation(new SuperstepLongAggregationDerivation(4, "SentMsgVolume", "SentMsgVolume"));
+        addInfoDerivation(new SuperstepLongAggregationDerivation(4, "ReceivedMsgVolume", "ReceivedMsgVolume"));
+        addInfoDerivation(new SuperstepLongAggregationDerivation(4, "LocalMsgVolume", "LocalMsgVolume"));
+        addInfoDerivation(new SuperstepLongAggregationDerivation(4, "RemoteMsgVolume", "RemoteMsgVolume"));
+//        addInfoDerivation(new FilialLongMaxDerivation(4, GiraphType.Superstep, "ReceivedMsgVolume", "MaxReceivedMsgVolume"));
 
         addInfoDerivation(new SyncOverheadDerivation(4));
 
@@ -94,10 +90,19 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
             Operation operation = (Operation) entity;
 
             List<Info> computationDurationInfos = new ArrayList<>();
-            for (Operation suboperation : operation.getChildren()) {
-                if(suboperation.hasType(GiraphType.BspWorker, GiraphType.Computation)) {
-                    computationDurationInfos.add(suboperation.getInfo("Duration"));
+
+
+            for (Operation sibOperation : operation.getParent().findSiblingOperations(GiraphType.WorkerTask)) {
+                for (Operation subOperation : sibOperation.getChildren()) {
+                    if(subOperation.getMission().hasType(GiraphType.Superstep)) {
+                        if(subOperation.getMission().getId().equals(operation.getMission().getId())) {
+                            for (Operation computationOperation : subOperation.findSuboperations(GiraphType.Computation)) {
+                                computationDurationInfos.add(computationOperation.getInfo("Duration"));
+                            }
+                        }
+                    }
                 }
+
             }
 
             List<Source> sources = new ArrayList<>();
@@ -135,8 +140,8 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation coordinates each Bsp superstep among BspWorkers. " +
-                    "This operation starts after the BspMaster starts superstep %s, " +
-                    "and ends when the BspMaster ends superstep %s. ",
+                            "This operation starts after the BspMaster starts superstep %s, " +
+                            "and ends when the BspMaster ends superstep %s. ",
                     operation.getName(), operation.getMission().getId(), operation.getMission().getId());
             summary += getBasicSummary(operation);
 

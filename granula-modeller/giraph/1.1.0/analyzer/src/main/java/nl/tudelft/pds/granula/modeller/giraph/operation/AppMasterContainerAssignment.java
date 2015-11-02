@@ -23,6 +23,8 @@ import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.RecordInfoDerivation;
 import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
 import nl.tudelft.pds.granula.modeller.rule.derivation.ColorDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.time.DurationDerivation;
+import nl.tudelft.pds.granula.modeller.rule.derivation.time.ParentalEndTimeDerivation;
 import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
@@ -43,6 +45,8 @@ public class AppMasterContainerAssignment extends ConcreteOperationModel {
         addInfoDerivation(new RecordInfoDerivation(1, "ContainerHeapSize"));
 //        addInfoDerivation(new RecordInfoDerivation(1, "ContainersLoaded"));
         addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
+        addInfoDerivation(new ParentalEndTimeDerivation(6));
+        addInfoDerivation(new DurationDerivation(7));
         addInfoDerivation(new SummaryDerivation(10));
         addVisualDerivation(new MainInfoTableVisualization(1,
                 new ArrayList<String>() {{

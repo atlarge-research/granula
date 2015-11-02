@@ -20,17 +20,24 @@ import nl.tudelft.pds.granula.archiver.entity.Entity;
 import nl.tudelft.pds.granula.archiver.entity.info.Info;
 import nl.tudelft.pds.granula.archiver.entity.info.TimeSeriesInfo;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by wing on 26-2-15.
  */
+@XmlRootElement(name="Process")
 public class Process extends Entity {
 
     public Process(String name) {
         super();
         this.name = name;
+    }
+
+    public Process() {
+        super();
+        this.name = "unspecified";
     }
 
     public void addResourceInfo(TimeSeriesInfo info) {

@@ -82,4 +82,8 @@ public class Mission extends Entity {
         return children;
     }
 
+    public boolean hasType(String missionType) {
+        return getType().equals(missionType);
+    }
+
 }

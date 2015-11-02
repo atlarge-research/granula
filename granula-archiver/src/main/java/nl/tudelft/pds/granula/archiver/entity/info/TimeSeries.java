@@ -79,9 +79,18 @@ public class TimeSeries {
         return filteredTimeSeries;
     }
 
-    @XmlElement(name="Data")
+
     public List<Datapoint> getDatapoints() {
         return datapoints;
+    }
+
+    @XmlElement(name="Data")
+    public String getData() {
+        StringBuilder str = new StringBuilder();
+        for (Datapoint datapoint : datapoints) {
+            str.append(datapoint.getTimestamp() + "@" + datapoint .getValue() + "#");
+        }
+        return str.toString();
     }
 
     public void addDatapoint(long timestamp, double value) {

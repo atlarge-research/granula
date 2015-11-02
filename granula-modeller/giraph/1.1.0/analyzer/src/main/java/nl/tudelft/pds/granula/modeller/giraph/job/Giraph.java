@@ -28,7 +28,9 @@ import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 import nl.tudelft.pds.granula.modeller.rule.extraction.GiraphExtractionRule;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by wing on 12-3-15.
@@ -52,6 +54,9 @@ public class Giraph extends JobModel {
                     addOperationModel(new BspWorkerDataload());
                     addOperationModel(new BspWorkerPostDataload());
             addOperationModel(new BspMasterBspIteration());
+        addOperationModel(new BspWorkerMasterTask());
+        addOperationModel(new BspWorkerWorkerTask());
+            addOperationModel(new BspWorkerSuperstep());
                 addOperationModel(new GlobalCoordinatorGlobalSuperstep());
                     addOperationModel(new BspWorkerPrepSuperstep());
                     addOperationModel(new BspWorkerComputation());
@@ -74,7 +79,7 @@ public class Giraph extends JobModel {
     }
 
     public void loadRules() {
-        addInfoDerivation(new JobNameDerivationRule(2));
+        addInfoDerivation(new JobNameDerivationRule(9));
         addExtraction(new GiraphExtractionRule(1));
     }
 
@@ -90,6 +95,8 @@ public class Giraph extends JobModel {
         public boolean execute() {
 
             Job job = (Job) entity;
+
+
 
             Operation bspIteration = null;
             Operation containerAssignment = null;
@@ -112,6 +119,10 @@ public class Giraph extends JobModel {
                 }
             }
 
+            Info jobStartTime = job.getTopOperation().getInfo(GiraphType.StartTime);
+            String jobStartTimeText = new SimpleDateFormat("yyyyMMdd-HHmmss")
+                    .format(new Date(Long.parseLong(jobStartTime.getValue())));
+
             Info numContainers = containerAssignment.getInfo("NumContainers");
             Info containerHeapSize = containerAssignment.getInfo("ContainerHeapSize");
 
@@ -120,7 +131,8 @@ public class Giraph extends JobModel {
 
             String fileName = new File(dataInputPath.getValue()).getName();
 
-            String jobName = String.format("%s-%s, %sx%sMB",
+            String jobName = String.format("%s-%s-%s, %sx%sMB",
+                    jobStartTimeText,
                     computeClass.getValue().replace("Computation", ""), fileName,
                     numContainers.getValue(), containerHeapSize.getValue());
 

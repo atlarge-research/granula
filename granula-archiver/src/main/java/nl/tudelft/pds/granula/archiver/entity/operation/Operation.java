@@ -140,5 +140,78 @@ public class Operation extends Entity {
         return getType().equals(String.format("%s-%s", actorType, missionType));
     }
 
+    public Operation findSuboperation(String missionType) {
+        Operation operation = null;
+        for (Operation suboperation : getChildren()) {
+            if(suboperation.getMission().getType().equals(missionType)) {
+                if(operation == null) {
+                    operation = suboperation;
+                } else {
+                    throw new IllegalStateException();
+                }
+            }
+        }
+        return operation;
+    }
+
+    public List<Operation> findSuboperations(String actorType, String missionType) {
+        List<Operation> operations = new ArrayList<>();
+        for (Operation operation : getChildren()) {
+            if(operation.hasType(actorType, missionType)) {
+                operations.add(operation);
+            }
+        }
+        return operations;
+    }
+
+    public List<Operation> findSuboperations(String missionType) {
+        List<Operation> operations = new ArrayList<>();
+        for (Operation operation : getChildren()) {
+            if(operation.getMission().hasType(missionType)) {
+                operations.add(operation);
+            }
+        }
+        return operations;
+    }
+
+
+    public List<Operation> findDescendantOperations(String missionType, int searchLevel) {
+        List<Operation> operations = new ArrayList<>();
+        for (Operation operation : getChildren()) {
+            if(operation.getMission().hasType(missionType)) {
+                operations.add(operation);
+            }
+            if(searchLevel - 1 > 0) {
+                operations.addAll(operation.findDescendantOperations(missionType, searchLevel - 1));
+            }
+        }
+        return operations;
+    }
+
+    public List<Operation> findSiblingOperations(String actorType, String missionType) {
+        List<Operation> operations = new ArrayList<>();
+        for (Operation operation : getParent().getChildren()) {
+            if(operation.hasType(actorType, missionType)) {
+                if(!operation.getUuid().equals(this)) {
+                    operations.add(operation);
+                }
+            }
+        }
+        return operations;
+    }
+
+    public List<Operation> findSiblingOperations(String missionType) {
+        List<Operation> operations = new ArrayList<>();
+        for (Operation operation : getParent().getChildren()) {
+            if(operation.getMission().hasType(missionType)) {
+                if(!operation.getUuid().equals(this)) {
+                    operations.add(operation);
+                }
+            }
+        }
+        return operations;
+    }
+
+
 
 }

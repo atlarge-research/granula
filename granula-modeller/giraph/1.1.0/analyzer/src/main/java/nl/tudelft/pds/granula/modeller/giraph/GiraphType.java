@@ -61,7 +61,8 @@ public class GiraphType extends Identifier {
     public static String Superstep = "Superstep";
     public static String DataOffload = "DataOffload";
     public static String Cleanup = "Cleanup";
-
+    public static String WorkerTask = "WorkerTask";
+    public static String MasterTask = "MasterTask";
     public static String BspIteration = "BspIteration";
 
 
@@ -82,6 +83,7 @@ public class GiraphType extends Identifier {
 
 
     public static String cpu_user = "cpu_user";
+    public static String cpu_system = "cpu_system";
     public static String cpu_aidle = "cpu_aidle";
     public static String cpu_idle = "cpu_idle";
     public static String cpu_steal = "cpu_steal";

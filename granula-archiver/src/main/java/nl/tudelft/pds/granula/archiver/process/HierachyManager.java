@@ -17,12 +17,19 @@
 package nl.tudelft.pds.granula.archiver.process;
 
 import nl.tudelft.pds.granula.archiver.entity.Identifier;
+import nl.tudelft.pds.granula.archiver.entity.environment.Process;
+import nl.tudelft.pds.granula.archiver.entity.environment.ComputationNode;
+import nl.tudelft.pds.granula.archiver.entity.environment.Environment;
+import nl.tudelft.pds.granula.archiver.entity.info.RecordSource;
+import nl.tudelft.pds.granula.archiver.entity.info.Source;
+import nl.tudelft.pds.granula.archiver.entity.info.TimeSeriesInfo;
 import nl.tudelft.pds.granula.archiver.entity.operation.Actor;
 import nl.tudelft.pds.granula.archiver.entity.operation.Job;
 import nl.tudelft.pds.granula.archiver.entity.operation.Mission;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
 import nl.tudelft.pds.granula.archiver.source.record.Record;
 import nl.tudelft.pds.granula.archiver.source.record.RecordInfo;
+import nl.tudelft.pds.granula.archiver.source.record.UtilRecord;
 import nl.tudelft.pds.granula.modeller.model.job.JobModel;
 import nl.tudelft.pds.granula.modeller.model.operation.OperationModel;
 import nl.tudelft.pds.granula.modeller.rule.assembling.AssemblingRule;
@@ -30,7 +37,15 @@ import nl.tudelft.pds.granula.modeller.rule.filling.FillingRule;
 import nl.tudelft.pds.granula.modeller.rule.linking.LinkingRule;
 import nl.tudelft.pds.granula.util.UuidGenerator;
 
-import java.util.*;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 public class HierachyManager {
 
@@ -215,50 +230,48 @@ public class HierachyManager {
 
 
     public void buildEnvironment() {
-//        List<ResourceRecord> resourceRecords = jobRecord.getResourceRecords();
-//
-//        Set<String> envIds = new LinkedHashSet<>();
-//        Set<String> nodeIds = new LinkedHashSet<>();
+        List<UtilRecord> utilRecords = job.getJobRecord().getUtilRecords();
 
-//        for (ResourceRecord resourceRecord : resourceRecords) {
-//            String sourceFilePath = resourceRecord.getRecordLocation().getLocation();
-//            String[] parentDirs = sourceFilePath.split("/");
-//            envIds.add(parentDirs[2]);
-//            nodeIds.add(parentDirs[3]);
-//        }
+        Set<String> envIds = new LinkedHashSet<>();
+        Set<String> nodeIds = new LinkedHashSet<>();
 
-//        if(envIds.size() != 1 || nodeIds.size() <= 0) {
-//            throw new IllegalStateException();
-//        }
+        for (UtilRecord utilRecord : utilRecords) {
+            String sourceFilePath = utilRecord.getRecordLocation().getLocation();
+            String[] parentDirs = sourceFilePath.split("/");
+            String nodeId = parentDirs[parentDirs.length - 2];
+            String envId = parentDirs[parentDirs.length - 3];
+            envIds.add(envId);
+            nodeIds.add(nodeId);
+        }
 
-//        String envId = (String) envIds.toArray()[0];
-//        Environment env = new Environment(envId);
-//        for (String nodeId : nodeIds) {
-//            ComputationNode computationNode = new ComputationNode(nodeId);
-//            computationNode.addProcess(new Process("all"));
-//            env.addNode(computationNode);
-//
-//        }
+        if(envIds.size() != 1 || nodeIds.size() <= 0) {
+            throw new IllegalStateException();
+        }
 
-//        for (ResourceRecord resourceRecord : resourceRecords) {
-//            String sourceFilePath = resourceRecord.getRecordLocation().getLocation();
-//            String[] parentDirs = sourceFilePath.split("/");
-//            String nodeId = parentDirs[3];
-//            String[] fileNameParts = parentDirs[4].split("-");
-//            String processId = (fileNameParts.length > 1) ? fileNameParts[0] : "all";
-//            String rInfoName = ((fileNameParts.length > 1) ? fileNameParts[1] : fileNameParts[0]).replace(".rrd", "");
-//
-//            //System.out.println(String.format("%s, %s, %s", nodeId, processId, rInfoName));
-//
-//            TimeSeriesInfo timeSeriesInfo = new TimeSeriesInfo(rInfoName);
-//            Source source = new RecordSource(rInfoName, resourceRecord);
-//            timeSeriesInfo.addInfo("Bytes", resourceRecord.getTimeSeries(), source);
-//            env.addResourceInfo(timeSeriesInfo, nodeId);
-//
-//        }
+        String envId = (String) envIds.toArray()[0];
+        Environment env = new Environment(envId);
+        for (String nodeId : nodeIds) {
+            ComputationNode computationNode = new ComputationNode(nodeId);
+            computationNode.addProcess(new Process("all"));
+            env.addNode(computationNode);
 
-//        job.setEnvironment(env);
+        }
 
+        for (UtilRecord utilRecord : utilRecords) {
+            String sourceFilePath = utilRecord.getRecordLocation().getLocation();
+            String[] parentDirs = sourceFilePath.split("/");
+            String nodeId = parentDirs[parentDirs.length - 2];
+            String uInfoName = (new File(sourceFilePath)).getName().replace(".rrd", "");
+
+            //System.out.println(String.format("%s, %s, %s", nodeId, processId, rInfoName));
+
+            TimeSeriesInfo timeSeriesInfo = new TimeSeriesInfo(uInfoName);
+            Source source = new RecordSource(uInfoName, utilRecord);
+            timeSeriesInfo.addInfo("Bytes", utilRecord.getTimeSeries(), source);
+            env.addResourceInfo(timeSeriesInfo, nodeId);
+
+        }
+        job.setEnvironment(env);
     }
 
 }

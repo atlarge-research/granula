@@ -21,11 +21,11 @@ import nl.tudelft.pds.granula.archiver.entity.info.TimeSeries;
 /**
  * Created by wing on 26-2-15.
  */
-public class ResourceRecord extends Record {
+public class UtilRecord extends Record {
 
     TimeSeries timeSeries;
 
-    public ResourceRecord() {
+    public UtilRecord() {
         this.timeSeries = new TimeSeries();
     }
 

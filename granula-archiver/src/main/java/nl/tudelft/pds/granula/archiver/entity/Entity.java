@@ -65,7 +65,7 @@ public abstract class Entity extends Archivable {
             return infos.get(name);
         }
         else {
-            throw new IllegalStateException();
+            throw new IllegalStateException(String.format("%s does not contain info %s.", toString(), name));
         }
     }
 

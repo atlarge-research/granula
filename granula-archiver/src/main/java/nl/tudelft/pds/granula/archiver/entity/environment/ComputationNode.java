@@ -19,6 +19,9 @@ package nl.tudelft.pds.granula.archiver.entity.environment;
 import nl.tudelft.pds.granula.archiver.entity.Entity;
 import nl.tudelft.pds.granula.archiver.entity.info.TimeSeriesInfo;
 
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +30,7 @@ import java.util.Map;
 /**
  * Created by wing on 26-2-15.
  */
+@XmlRootElement(name="ComputationNode")
 public class ComputationNode extends Entity {
     Map<String, Process> processes;
 
@@ -36,6 +40,14 @@ public class ComputationNode extends Entity {
         processes = new LinkedHashMap<>();
     }
 
+    public ComputationNode() {
+        super();
+        this.name = "unspecified";
+        processes = new LinkedHashMap<>();
+    }
+
+    @XmlElementWrapper(name="Processes")
+    @XmlElementRef
     public List<Process> getProcesses() {
         return new ArrayList<Process>(processes.values());
     }

@@ -34,7 +34,7 @@ public class GiraphArchiver {
 //        }
 
         // job
-        JobDirectorySource jobDirSource = new JobDirectorySource(Configuration.repoPath + "/data/log/giraph.hadoop");
+        JobDirectorySource jobDirSource = new JobDirectorySource(Configuration.repoPath + "/data/log/giraph-tmp");
         jobDirSource.load();
 
         GranulaArchiver granulaArchiver = new GranulaArchiver(jobDirSource, new Giraph(), outputPath);

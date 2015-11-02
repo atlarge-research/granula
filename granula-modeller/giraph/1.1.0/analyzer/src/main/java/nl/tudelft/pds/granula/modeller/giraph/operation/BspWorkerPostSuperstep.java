@@ -22,7 +22,9 @@ import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
 import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.DerivationRule;
 import nl.tudelft.pds.granula.modeller.rule.derivation.RecordInfoDerivation;
+import nl.tudelft.pds.granula.modeller.rule.filling.UniqueIdOperationFilling;
 import nl.tudelft.pds.granula.modeller.rule.linking.IdentifierParentLinking;
+import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
 import nl.tudelft.pds.granula.modeller.rule.visual.MainInfoTableVisualization;
 import nl.tudelft.pds.granula.modeller.rule.derivation.ColorDerivation;
 import nl.tudelft.pds.granula.modeller.rule.visual.TableVisualization;
@@ -39,7 +41,7 @@ public class BspWorkerPostSuperstep extends ConcreteOperationModel {
 
     public void loadRules() {
         super.loadRules();
-        addLinkingRule(new IdentifierParentLinking(GiraphType.GlobalCoordinator, GiraphType.Unique, GiraphType.GlobalSuperstep, GiraphType.Equal));
+        addLinkingRule(new IdentifierParentLinking(GiraphType.BspWorker, GiraphType.Equal, GiraphType.Superstep, GiraphType.Equal));
         addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
         addInfoDerivation(new SummaryDerivation(10));
         addRecordInfos();

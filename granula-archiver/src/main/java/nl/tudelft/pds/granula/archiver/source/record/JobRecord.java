@@ -26,11 +26,11 @@ import java.util.List;
  */
 public class JobRecord {
     List<Record> records;
-    List<ResourceRecord> resourceRecords;
+    List<UtilRecord> utilRecords;
 
     public JobRecord() {
         this.records = new ArrayList<>();
-        this.resourceRecords = new ArrayList<>();
+        this.utilRecords = new ArrayList<>();
     }
 
     public List<Record> getRecords() {
@@ -49,12 +49,12 @@ public class JobRecord {
         this.records = records;
     }
 
-    public List<ResourceRecord> getResourceRecords() {
-        return resourceRecords;
+    public List<UtilRecord> getUtilRecords() {
+        return utilRecords;
     }
 
-    public void addResourceRecord(ResourceRecord resourceRecord) {
-        resourceRecords.add(resourceRecord);
+    public void addUtilRecord(UtilRecord utilRecord) {
+        utilRecords.add(utilRecord);
     }
 
     public void sort() {

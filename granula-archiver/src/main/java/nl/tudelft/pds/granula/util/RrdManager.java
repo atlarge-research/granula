@@ -17,6 +17,7 @@
 package nl.tudelft.pds.granula.util;
 
 import nl.tudelft.pds.granula.archiver.entity.info.TimeSeries;
+import nl.tudelft.pds.granula.archiver.source.DataStream;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.*;
 
@@ -36,9 +37,10 @@ public class RrdManager {
 
     }
 
-    public static TimeSeries extract(String rrdFilePath, long startTime, long endTime) {
+    public static TimeSeries extract(DataStream dataStream, long startTime, long endTime) {
         try {
 
+            String rrdFilePath=dataStream.getPath();
             TimeSeries timeSeries = new TimeSeries();
 
             RrdDb rrdDb = new RrdDb("/tmp/tmp-" + UuidGenerator.getRandomUUID() + ".rrd",

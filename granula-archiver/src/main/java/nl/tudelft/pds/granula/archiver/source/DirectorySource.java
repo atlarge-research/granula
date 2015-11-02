@@ -6,7 +6,6 @@ import org.apache.commons.io.filefilter.TrueFileFilter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +31,14 @@ public class DirectorySource extends DataSource {
     @Override
     public void load() {
 
-        inputStreams = new ArrayList<>();
+        dataStreams = new ArrayList<>();
         List<File> files = new ArrayList<>(
                 FileUtils.listFilesAndDirs(new File(filepath), TrueFileFilter.TRUE, TrueFileFilter.TRUE));
 
         for (File file : files) {
             if(file.isFile()) {
                 try {
-                    inputStreams.add(new FileInputStream(file));
+                    dataStreams.add(new DataStream(file.getAbsolutePath(), new FileInputStream(file)));
                 } catch (FileNotFoundException e) {
                     System.out.println(String.format("Log file %s was specfified in the data source, but it cannot be found.", file));
                     throw new IllegalStateException();
