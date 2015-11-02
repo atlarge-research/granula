@@ -36,7 +36,18 @@ public abstract class ResourceUtilDerivation extends DerivationRule {
     public boolean mapUtilMetricInfo(Operation operation, String utilMtc) {
 
         Environment env = operation.getEnvironment();
-        ComputationNode node = env.getNode(operation.getInfo(Identifier.ComputeNode).getValue());
+
+        ComputationNode node = null;
+        try {
+            node = env.getNode(operation.getInfo(Identifier.ComputeNode).getValue());
+        } catch (IllegalStateException e) {
+            System.out.println(String.format("Resource utilization metrics of node %s cannot be found.", operation.getInfo(Identifier.ComputeNode).getValue()));
+        }
+
+        if(node == null) {
+            return false;
+        }
+
 
         if(!node.hasInfo(utilMtc)) {
             System.out.println(String.format("Node %s does not have resource util info %s", node.getName(), utilMtc));

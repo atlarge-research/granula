@@ -38,7 +38,6 @@ public class BspWorkerWorkerTask extends ConcreteOperationModel {
         super.loadRules();
         addLinkingRule(new UniqueParentLinking(GiraphType.BspMaster, GiraphType.BspIteration));
         addInfoDerivation(new RecordInfoDerivation(1, GiraphType.ComputeNode));
-        addInfoDerivation(new MemoryUtilDerivation(1));
 
         addVisualDerivation(new MainInfoTableVisualization(1,
                 new ArrayList<String>() {{
