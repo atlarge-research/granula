@@ -16,9 +16,12 @@
 
 package nl.tudelft.pds.granula.modeller.giraph.operation;
 
+import nl.tudelft.pds.granula.archiver.entity.info.Source;
+import nl.tudelft.pds.granula.archiver.entity.info.SummaryInfo;
 import nl.tudelft.pds.granula.archiver.entity.operation.Operation;
 import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 import nl.tudelft.pds.granula.modeller.model.operation.ConcreteOperationModel;
+import nl.tudelft.pds.granula.modeller.rule.derivation.BasicSummaryDerivation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.RecordInfoDerivation;
 import nl.tudelft.pds.granula.modeller.rule.derivation.ResourceUtilDerivation;
 import nl.tudelft.pds.granula.modeller.rule.linking.UniqueParentLinking;
@@ -71,32 +74,30 @@ public class BspWorkerWorkerTask extends ConcreteOperationModel {
 //        memoryUtilVisual.addY1Info(GiraphType.mem_total);
         addVisualDerivation(memoryUtilVisual);
 
+        addInfoDerivation(new SummaryDerivation(10));
 
     }
 
+    protected class SummaryDerivation extends BasicSummaryDerivation {
 
-    protected class MemoryUtilDerivation extends ResourceUtilDerivation {
-
-        public MemoryUtilDerivation(int level) {
-            super(level);
-        }
+        public SummaryDerivation(int level) { super(level); }
 
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            boolean succeed = true;
+            String summary = String.format("The [%s] operation is executed by a BspWorker to carry out a set of Supersteps locally. " +
+                            "The resource utilization metrics of the computational node (on which the BspWorker runs) is reported here.",
+                    operation.getName());
+            summary += getBasicSummary(operation);
 
-            //GiraphType.mem_total
-
-            String[] memUtilMetrics = {GiraphType.mem_buffers, GiraphType.mem_cached, GiraphType.mem_free,
-                    GiraphType.mem_shared};
-
-            for (String memUtilMtc : memUtilMetrics) {
-                boolean mapUtilSucceed = mapUtilMetricInfo(operation, memUtilMtc);
-                if(!mapUtilSucceed) { succeed = false; }
-            }
+            SummaryInfo summaryInfo = new SummaryInfo("Summary");
+            summaryInfo.setValue("A Summary");
+            summaryInfo.addSummary(summary, new ArrayList<Source>());
+            operation.addInfo(summaryInfo);
             return  true;
         }
     }
+
+
 
 }

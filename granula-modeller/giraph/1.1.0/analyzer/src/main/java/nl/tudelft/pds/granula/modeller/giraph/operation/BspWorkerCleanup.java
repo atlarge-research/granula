@@ -51,8 +51,7 @@ public class BspWorkerCleanup extends ConcreteOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation cleans up the BspExecution operation after all supersteps are done, " +
-                    "which involves ServerCleanup, ClientCleanup, DataOffload, FinalCleanup, ZookeeperOfflining etc. " +
-                    "The exact sychronization barrier of this operation is yet unclear. ", operation.getName());
+                    "which involves ServerCleanup, ClientCleanup, DataOffload, FinalCleanup, ZookeeperOfflining etc. ", operation.getName());
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

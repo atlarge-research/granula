@@ -1,5 +1,6 @@
 package nl.tudelft.pds.granula.modeller.rule.extraction;
 
+import nl.tudelft.pds.granula.archiver.source.DataStream;
 import nl.tudelft.pds.granula.archiver.source.record.Record;
 import nl.tudelft.pds.granula.archiver.source.record.RecordLocation;
 import nl.tudelft.pds.granula.modeller.rule.extraction.ExtractionRule;
@@ -22,12 +23,12 @@ public class MapReduceV2ExtractionRule extends ExtractionRule {
         return false;
     }
 
-    public List<Record> extractRecordFromInputStream(InputStream fis) {
+    public List<Record> extractRecordFromInputStream(DataStream dataStream) {
 
         List<Record> granularlogList = new ArrayList<>();
 
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            BufferedReader br = new BufferedReader(new InputStreamReader(dataStream.getInputStream()));
 
             String line = null;
             int lineCount = 0;

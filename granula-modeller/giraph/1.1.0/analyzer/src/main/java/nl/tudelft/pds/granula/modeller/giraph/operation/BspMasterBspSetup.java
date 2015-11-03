@@ -64,7 +64,7 @@ public class BspMasterBspSetup extends AbstractOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation sets up the BspMaster and the BspWorkers ready for the %s, " +
-                    "which involves %s and %s. ",
+                    "which contains 2 child operations: %s and %s. ",
                     operation.getName(), "BspIteration", "GlobalStartup", "GlobalDataLoad");
             summary += getBasicSummary(operation);
 

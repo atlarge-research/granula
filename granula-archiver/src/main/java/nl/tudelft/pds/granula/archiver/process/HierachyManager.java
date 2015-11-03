@@ -245,7 +245,8 @@ public class HierachyManager {
         }
 
         if(envIds.size() != 1 || nodeIds.size() <= 0) {
-            throw new IllegalStateException();
+            return;
+//            throw new IllegalStateException();
         }
 
         String envId = (String) envIds.toArray()[0];

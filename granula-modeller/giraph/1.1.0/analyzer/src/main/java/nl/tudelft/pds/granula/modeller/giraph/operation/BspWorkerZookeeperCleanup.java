@@ -50,8 +50,7 @@ public class BspWorkerZookeeperCleanup extends ConcreteOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation cleans up Zookeeper. " +
-                    "While only executed by BspMaster, It's difficult to judge what this operation is synchronized to. " +
-                    "As the BspWorkers are actually doing %s and %s at the same time",
+                            "While only executed by BspMaster, strangely this operation sychronizes to the %s and %s operations of the BspWorkers. ",
                     operation.getName(), "ClientCleanup", "DataOffload");
             summary += getBasicSummary(operation);
 

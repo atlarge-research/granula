@@ -61,7 +61,7 @@ public class AppMasterBspExecution extends AbstractOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation manages the distributed enivronment to facilitate the %s operation, " +
-                    "which involves %s, %s and %s", operation.getName(), "BSPIteration", "BspSetup", "BSPIteration", "BspCleanup. ");
+                    "which contains 3 child operations: %s, %s and %s", operation.getName(), "BspIteration", "BspSetup", "BSPIteration", "BspCleanup. ");
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

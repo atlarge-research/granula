@@ -57,9 +57,9 @@ public class AppMasterAppStartup extends ConcreteOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            String summary = String.format("The [%s] operation set up the AppMaster and starts to request Yarn Containers required for the Bsp Execution. " +
-                    "This operation starts after AppMaster starts operating, " +
-                    "and ends when AppMaster being notified that all containers requests are granted. ",
+            String summary = String.format("The [%s] operation sets up the Giraph job client. " +
+                    "This operation starts when Giraph job client is started " +
+                    "and ends before the job client starts to request containers. ",
                     operation.getName());
             summary += getBasicSummary(operation);
 

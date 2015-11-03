@@ -63,8 +63,7 @@ public class BspWorkerDataload extends ConcreteOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            String summary = String.format("The [%s] operation loads the input graph data from Distributed File System. " +
-                    "The exact functioning of this operation is yet unclear. ", operation.getName());
+            String summary = String.format("The [%s] operation loads the input graph data from Distributed File System. ", operation.getName());
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

@@ -34,7 +34,7 @@ public class GiraphType extends Identifier {
     public static String Deployment = "Deployment";
     public static String ContainerLoad = "ContainerLoad";
     public static String ContainerOffload = "ContainerOffload";
-    public static String Undeployment = "Undeployment";
+    public static String Decommission = "Decommission";
     public static String ContainerAssignment = "ContainerAssignment";
     public static String AppStartup = "AppStartup";
     public static String AppTermination = "AppTermination";

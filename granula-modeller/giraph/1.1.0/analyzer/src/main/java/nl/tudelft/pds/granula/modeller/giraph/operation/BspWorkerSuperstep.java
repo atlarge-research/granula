@@ -79,12 +79,11 @@ public class BspWorkerSuperstep extends AbstractOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            String summary = String.format("The [%s] operation executes each BSP superstep. In each BspWorker, messages received at previous superstep are processed per vertex, and new messages are created in the process." +
-                            "The exact functioning of this operation is eh.. still under investigation. (Superstep is too sync-ed to be accurate). " +
-                            "This operation starts after %s starts %s, " +
-                            "and ends when %s ends %s. " +
-                            "This operation does not contain any child operations. ",
-                    operation.getName(), operation.getActor().getName(), operation.getMission().getName(), operation.getActor().getName(), operation.getMission().getName());
+            String summary = String.format("The [%s] operation executes a BSP superstep. " +
+                    "Each BspWorker prepares for the superstep, " +
+                    "computes partitions and receives and sends messages, " +
+                    "and waits for other BspWorker to complete.",
+                    operation.getName());
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

@@ -118,7 +118,7 @@ public class Operation extends Entity {
             return records.get(recordType);
         }
         else {
-            throw new IllegalStateException();
+            throw new IllegalStateException(String.format("Operation %s cannot find record %s", getName(), recordType));
         }
     }
 

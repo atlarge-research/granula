@@ -44,12 +44,17 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
 
         addInfoDerivation(new RecordInfoDerivation(1, "ComputationClass"));
         addInfoDerivation(new RecordInfoDerivation(1, "DataInputPath"));
+        addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "AvgVertices"));
+        addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "AvgEdges"));
+        addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "NumSuperstep"));
+        addInfoDerivation(new SummaryDerivation(10));
         addVisualDerivation(new MainInfoTableVisualization(1,
                 new ArrayList<String>() {{
                     add("ComputationClass");
                     add("DataInputPath");
-//                    add("NumSuperstep");
-//                    add("SyncOverhead");
+                    add("AvgVertices");
+                    add("AvgEdges");
+                    add("NumSuperstep");
                 }}));
 
     }
@@ -62,7 +67,7 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation executes the acutal Bulk Synchronous Parallel programming model, " +
-                    "which contains a set of %s operation. ", operation.getName(), "GlobalSuperstep");
+                    "which contains a set of %s and %s operations. ", operation.getName(), "MasterTask", "WorkerTask");
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

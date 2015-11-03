@@ -48,7 +48,7 @@ public class TopActorTopMission extends AbstractOperationModel {
         addLinkingRule(new EmptyLinking());
         addFillingRule(new UniqueOperationFilling(2, GiraphType.AppMaster, GiraphType.Deployment));
         addFillingRule(new UniqueOperationFilling(2, GiraphType.AppMaster, GiraphType.BspExecution));
-        addFillingRule(new UniqueOperationFilling(2, GiraphType.AppMaster, GiraphType.Undeployment));
+        addFillingRule(new UniqueOperationFilling(2, GiraphType.AppMaster, GiraphType.Decommission));
 
         addInfoDerivation(new FilialStartTimeDerivation(6));
         addInfoDerivation(new FilialEndTimeDerivation(6));
@@ -102,9 +102,9 @@ public class TopActorTopMission extends AbstractOperationModel {
         public boolean execute() {
                 Operation operation = (Operation) entity;
                 String summary = String.format("The [%s] operation is the top-level operation of each Giraph job. " +
-                        "In Giraph, this operation starts when the AppMaster is initialized, " +
-                        "and ends when the AppMaster is terminated. " +
-                        "It contains 3 child operations: Deployment, BspExecution and Undeployment. ", operation.getName());
+                        "In Giraph, this operation starts when the Giraph job client is initialized, " +
+                        "and ends when the Giraph job client is terminated. " +
+                        "It contains 3 child operations: Deployment, BspExecution and Decommission. ", operation.getName());
                 summary += getBasicSummary(operation);
 
                 SummaryInfo summaryInfo = new SummaryInfo("Summary");
@@ -161,41 +161,6 @@ public class TopActorTopMission extends AbstractOperationModel {
         }
     }
 
-    protected class BspTimeDerivation extends DerivationRule {
-
-        public BspTimeDerivation(int level) {
-            super(level);
-        }
-
-        @Override
-        public boolean execute() {
-            Operation operation = (Operation) entity;
-
-            Info bspDurationInfo = null;
-
-            List<Source> sources = new ArrayList<>();
-            for (Operation suboperation : operation.getChildren()) {
-                if(suboperation.getMission().getType().equals(GiraphType.BspExecution)) {
-                    for (Operation subSuboperation : suboperation.getChildren()) {
-                        if(subSuboperation.getMission().getType().equals(GiraphType.BspIteration)) {
-                            bspDurationInfo = subSuboperation.getInfo("Duration");
-                        }
-                    }
-                }
-            }
-
-            sources.add(new InfoSource(bspDurationInfo.getName(), bspDurationInfo));
-
-            BasicInfo bspTimeInfo = new BasicInfo("BspTime");
-            long bspTime = Long.parseLong(bspDurationInfo.getValue());
-            bspTimeInfo.setDescription(String.format("The [%s] is the execution time used for the actual BSP supersteps. ", bspTimeInfo.getName()));
-            bspTimeInfo.addInfo(String.valueOf(bspTime), sources);
-            operation.addInfo(bspTimeInfo);
-
-            return true;
-        }
-    }
-
     protected class BspRatioDerivation extends DerivationRule {
 
         public BspRatioDerivation(int level) {
@@ -224,6 +189,34 @@ public class TopActorTopMission extends AbstractOperationModel {
         }
     }
 
+
+    protected class BspTimeDerivation extends DerivationRule {
+
+        public BspTimeDerivation(int level) {
+            super(level);
+        }
+
+        @Override
+        public boolean execute() {
+            Operation operation = (Operation) entity;
+            List<Source> sources = new ArrayList<>();
+
+            Info bspDurationInfo = operation.
+                    findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspIteration)
+                    .getInfo("Duration");;
+
+            sources.add(new InfoSource(bspDurationInfo.getName(), bspDurationInfo));
+
+            BasicInfo bspTimeInfo = new BasicInfo("BspTime");
+            long bspTime = Long.parseLong(bspDurationInfo.getValue());
+            bspTimeInfo.setDescription(String.format("The [%s] is the execution time used for the actual BSP supersteps.", bspTimeInfo.getName()));
+            bspTimeInfo.addInfo(String.valueOf(bspTime), sources);
+            operation.addInfo(bspTimeInfo);
+
+            return true;
+        }
+    }
 
 
 
@@ -266,29 +259,18 @@ public class TopActorTopMission extends AbstractOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-
-            Info deploymentDurationInfo = null;
-            Info undeploymentDurationInfo = null;
-
             List<Source> sources = new ArrayList<>();
 
-            for (Operation suboperation : operation.getChildren()) {
-                if(suboperation.hasType(GiraphType.AppMaster, GiraphType.Deployment)) {
-                    deploymentDurationInfo = suboperation.getInfo("Duration");
-                }
-                if(suboperation.hasType(GiraphType.AppMaster, GiraphType.Undeployment)) {
-                    undeploymentDurationInfo = suboperation.getInfo("Duration");
-
-                }
-            }
+            Info deploymentDurationInfo = operation.findSuboperation(GiraphType.Deployment).getInfo("Duration");
+            Info decommissionDurationInfo = operation.findSuboperation(GiraphType.Decommission).getInfo("Duration");
 
             sources.add(new InfoSource("DeploymentDuration", deploymentDurationInfo));
-            sources.add(new InfoSource("UndeploymentDuration", undeploymentDurationInfo));
+            sources.add(new InfoSource("DecomissionDuration", decommissionDurationInfo));
 
             BasicInfo allocTimeInfo = new BasicInfo("ResourceAllocTime");
-            long allocRatio = Long.parseLong(deploymentDurationInfo.getValue()) + Long.parseLong(undeploymentDurationInfo.getValue());
-            allocTimeInfo.addInfo(String.valueOf(allocRatio), sources);
-            allocTimeInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for resource allocation, " +
+            long allocTime = Long.parseLong(deploymentDurationInfo.getValue()) + Long.parseLong(decommissionDurationInfo.getValue());
+            allocTimeInfo.addInfo(String.valueOf(allocTime), sources);
+            allocTimeInfo.setDescription(String.format("[%s] is the execution time used for resource allocation, " +
                             "which is equal to ([%s] + [%s]). ", allocTimeInfo.getName(),
                     sources.get(0).getName(), sources.get(1).getName()));
             operation.addInfo(allocTimeInfo);
@@ -319,7 +301,7 @@ public class TopActorTopMission extends AbstractOperationModel {
             BasicInfo coordRatioInfo = new BasicInfo("CoordinationRatio");
             double allocRatio = (Long.parseLong(coordTimeInfo.getValue()) * 1.0d) / Long.parseLong(totalDurationInfo.getValue());
             coordRatioInfo.addInfo(String.valueOf(String.format("%.2f", allocRatio)), sources);
-            coordRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for BSP coordination, " +
+            coordRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for coordinating BSP execution, " +
                     "which is equal to [%s] / [%s].", coordRatioInfo.getName(), sources.get(0).getName(), sources.get(1).getName()));
             operation.addInfo(coordRatioInfo);
 
@@ -337,36 +319,44 @@ public class TopActorTopMission extends AbstractOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-
-            Info bspSetupDurationInfo = null;
-            Info bspCleanupDurationInfo = null;
-
             List<Source> sources = new ArrayList<>();
 
-            for (Operation suboperation : operation.getChildren()) {
-                if(suboperation.getMission().getType().equals(GiraphType.BspExecution)) {
-                    for (Operation subSuboperation : suboperation.getChildren()) {
-                        if(subSuboperation.hasType(GiraphType.BspMaster, GiraphType.BspSetup)) {
-                            bspSetupDurationInfo = subSuboperation.getInfo("Duration");
-                        }
-                        if(subSuboperation.hasType(GiraphType.BspMaster, GiraphType.BspCleanup)) {
-                            bspCleanupDurationInfo = subSuboperation.getInfo("Duration");
+            Info bspSetupDurationInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspSetup)
+                    .getInfo("Duration");
 
-                        }
-                    }
-                }
-            }
+            Info bspCleanupDurationInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspCleanup)
+                    .getInfo("Duration");
 
             sources.add(new InfoSource("BspSetupDuration", bspSetupDurationInfo));
             sources.add(new InfoSource("BspCleanupDuration", bspCleanupDurationInfo));
 
-            BasicInfo allocTimeInfo = new BasicInfo("CoordinationTime");
-            long allocRatio = Long.parseLong(bspSetupDurationInfo.getValue()) + Long.parseLong(bspCleanupDurationInfo.getValue());
-            allocTimeInfo.addInfo(String.valueOf(allocRatio), sources);
-            allocTimeInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for BSP coordination, " +
-                            "which is equal to ([%s] + [%s]). ", allocTimeInfo.getName(),
-                    sources.get(0).getName(), sources.get(1).getName()));
-            operation.addInfo(allocTimeInfo);
+            Info dataLoadDurationInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspSetup)
+                    .findSuboperation(GiraphType.GlobalDataload)
+                    .getInfo("Duration");
+
+            Info dataOffloadTimeInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspCleanup)
+                    .getInfo("DataOffloadTime");
+
+            sources.add(new InfoSource("DataLoadTime", dataLoadDurationInfo));
+            sources.add(new InfoSource("DataOffloadTime", dataOffloadTimeInfo));
+
+            BasicInfo coordTimeInfo = new BasicInfo("CoordinationTime");
+            long coordTime = Long.parseLong(bspSetupDurationInfo.getValue()) + Long.parseLong(bspCleanupDurationInfo.getValue())
+                    - Long.parseLong(dataLoadDurationInfo.getValue()) - Long.parseLong(dataOffloadTimeInfo.getValue());
+            coordTimeInfo.addInfo(String.valueOf(coordTime), sources);
+
+            coordTimeInfo.setDescription(String.format("[%s] is the execution time used for coordinating the BSP execution (exclude IO Time), " +
+                            "which is equal to ([%s] + [%s]) - ([%s] + [%s]). ", coordTimeInfo.getName(),
+                    sources.get(0).getName(), sources.get(1).getName(), sources.get(2).getName(), sources.get(3).getName()));
+            operation.addInfo(coordTimeInfo);
 
             return true;
         }
@@ -393,12 +383,12 @@ public class TopActorTopMission extends AbstractOperationModel {
             sources.add(new InfoSource(ioTimeInfo.getName(), ioTimeInfo));
             sources.add(new InfoSource("TotalDuration", totalDurationInfo));
 
-            BasicInfo coordRatioInfo = new BasicInfo("IORatio");
-            double allocRatio = (Long.parseLong(ioTimeInfo.getValue()) * 1.0d) / Long.parseLong(totalDurationInfo.getValue());
-            coordRatioInfo.addInfo(String.valueOf(String.format("%.2f", allocRatio)), sources);
-            coordRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for IO, " +
-                    "which is equal to [%s] / [%s].", coordRatioInfo.getName(), sources.get(0).getName(), sources.get(1).getName()));
-            operation.addInfo(coordRatioInfo);
+            BasicInfo ioRatioInfo = new BasicInfo("IORatio");
+            double ioRatio = (Long.parseLong(ioTimeInfo.getValue()) * 1.0d) / Long.parseLong(totalDurationInfo.getValue());
+            ioRatioInfo.addInfo(String.valueOf(String.format("%.2f", ioRatio)), sources);
+            ioRatioInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for IO operations, " +
+                    "which is equal to [%s] / [%s].", ioRatioInfo.getName(), sources.get(0).getName(), sources.get(1).getName()));
+            operation.addInfo(ioRatioInfo);
 
             return true;
         }
@@ -413,37 +403,26 @@ public class TopActorTopMission extends AbstractOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-
-            Info dataLoadDuration = null;
-            Info dataOffloadTimeInfo = null;
-
             List<Source> sources = new ArrayList<>();
 
-            for (Operation suboperation : operation.getChildren()) {
-                if(suboperation.getMission().getType().equals(GiraphType.BspExecution)) {
-                    for (Operation subSuboperation : suboperation.getChildren()) {
-                        if(subSuboperation.hasType(GiraphType.BspMaster, GiraphType.BspSetup)) {
-                            for (Operation subsubsubOperation : subSuboperation.getChildren()) {
-                                if(subsubsubOperation.hasType(GiraphType.GlobalCoordinator, GiraphType.GlobalDataload)) {
-                                    dataLoadDuration = subsubsubOperation.getInfo("Duration");
-                                }
-                            }
-                        }
+            Info dataLoadDuration = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspSetup)
+                    .findSuboperation(GiraphType.GlobalDataload)
+                    .getInfo("Duration");
 
-                        if(subSuboperation.hasType(GiraphType.BspMaster, GiraphType.BspCleanup)) {
-                            dataOffloadTimeInfo = subSuboperation.getInfo("DataOffloadTime");
-                        }
-                    }
-                }
-            }
+            Info dataOffloadTimeInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspCleanup)
+                    .getInfo("DataOffloadTime");
 
             sources.add(new InfoSource("DataLoadTime", dataLoadDuration));
             sources.add(new InfoSource("DataOffloadTime", dataOffloadTimeInfo));
 
             BasicInfo ioTimeInfo = new BasicInfo("IOTime");
-            long allocRatio = Long.parseLong(dataLoadDuration.getValue()) + Long.parseLong(dataOffloadTimeInfo.getValue());
-            ioTimeInfo.addInfo(String.valueOf(allocRatio), sources);
-            ioTimeInfo.setDescription(String.format("[%s] is the proportion of the total execution time used for IO, " +
+            long ioTime = Long.parseLong(dataLoadDuration.getValue()) + Long.parseLong(dataOffloadTimeInfo.getValue());
+            ioTimeInfo.addInfo(String.valueOf(ioTime), sources);
+            ioTimeInfo.setDescription(String.format("[%s] is the execution time used for IO operations, " +
                             "which is equal to ([%s] + [%s]). ", ioTimeInfo.getName(),
                     sources.get(0).getName(), sources.get(1).getName()));
             operation.addInfo(ioTimeInfo);
@@ -467,18 +446,10 @@ public class TopActorTopMission extends AbstractOperationModel {
 
             List<Source> sources = new ArrayList<>();
 
-            Operation bspIteration = null;
-            for(Operation suboperation: operation.getChildren()) {
-                if(suboperation.hasType(GiraphType.AppMaster, GiraphType.BspExecution)) {
-                    for (Operation subsuboperation : suboperation.getChildren()) {
-                        if (subsuboperation.hasType(GiraphType.BspMaster, GiraphType.BspIteration)) {
-                            bspIteration = subsuboperation;
-                        }
-                    }
-                }
-            }
-
-            Info computeClassInfo = bspIteration.getInfo("ComputationClass");
+            Info computeClassInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspIteration)
+                    .getInfo("ComputationClass");
             sources.add(new InfoSource("ComputationClass", computeClassInfo));
 
             BasicInfo computationClassLocalInfo = new BasicInfo("ComputationClass");
@@ -503,18 +474,10 @@ public class TopActorTopMission extends AbstractOperationModel {
 
             List<Source> sources = new ArrayList<>();
 
-            Operation bspIteration = null;
-            for(Operation suboperation: operation.getChildren()) {
-                if(suboperation.hasType(GiraphType.AppMaster, GiraphType.BspExecution)) {
-                    for (Operation subsuboperation : suboperation.getChildren()) {
-                        if (subsuboperation.hasType(GiraphType.BspMaster, GiraphType.BspIteration)) {
-                            bspIteration = subsuboperation;
-                        }
-                    }
-                }
-            }
-
-            Info dataInputPathInfo = bspIteration.getInfo("DataInputPath");
+            Info dataInputPathInfo = operation
+                    .findSuboperation(GiraphType.BspExecution)
+                    .findSuboperation(GiraphType.BspIteration)
+                    .getInfo("DataInputPath");
             String dataset = new File(dataInputPathInfo.getValue()).getName();
             sources.add(new InfoSource(dataInputPathInfo.getName(), dataInputPathInfo));
 
@@ -539,21 +502,12 @@ public class TopActorTopMission extends AbstractOperationModel {
         public boolean execute() {
 
             Operation operation = (Operation) entity;
-
             List<Source> sources = new ArrayList<>();
 
-            Operation containerAssignment = null;
-            for(Operation suboperation: operation.getChildren()) {
-                if(suboperation.hasType(GiraphType.AppMaster, GiraphType.Deployment)) {
-                    for (Operation subsuboperation : suboperation.getChildren()) {
-                        if(subsuboperation.hasType(GiraphType.AppMaster, GiraphType.ContainerAssignment)) {
-                            containerAssignment = subsuboperation;
-                        }
-                    }
-                }
-            }
-
-            Info containersLoaded = containerAssignment.getInfo("NumContainers");
+            Info containersLoaded = operation
+                    .findSuboperation(GiraphType.Deployment)
+                    .findSuboperation(GiraphType.ContainerLoad)
+                    .getInfo("NumContainers");
             sources.add(new InfoSource(containersLoaded.getName(), containersLoaded));
 
             BasicInfo containersLoadedLInfo = new BasicInfo("ContainersLoaded");
@@ -579,21 +533,14 @@ public class TopActorTopMission extends AbstractOperationModel {
         public boolean execute() {
 
             Operation operation = (Operation) entity;
-
             List<Source> sources = new ArrayList<>();
 
-            Operation containerAssignment = null;
-            for(Operation suboperation: operation.getChildren()) {
-                if(suboperation.hasType(GiraphType.AppMaster, GiraphType.Deployment)) {
-                    for (Operation subsuboperation : suboperation.getChildren()) {
-                        if(subsuboperation.hasType(GiraphType.AppMaster, GiraphType.ContainerAssignment)) {
-                            containerAssignment = subsuboperation;
-                        }
-                    }
-                }
-            }
+            Info containerHeapSize = operation
+                    .findSuboperation(GiraphType.Deployment)
+                    .findSuboperation(GiraphType.ContainerLoad)
+                    .getInfo("ContainerHeapSize");
 
-            Info containerHeapSize = containerAssignment.getInfo("ContainerHeapSize");
+
             sources.add(new InfoSource(containerHeapSize.getName(), containerHeapSize));
 
             BasicInfo containerSizeLInfo = new BasicInfo("ContainerSize");
@@ -601,7 +548,7 @@ public class TopActorTopMission extends AbstractOperationModel {
                     String.format("The [%s] is the heap size of Yarn containers used for this job.",
                             containerSizeLInfo.getName()));
 
-            containerSizeLInfo.addInfo(containerHeapSize.getValue(), sources);
+            containerSizeLInfo.addInfo(containerHeapSize.getValue() + " MB", sources);
             operation.addInfo(containerSizeLInfo);
 
             return  true;

@@ -1,5 +1,6 @@
 package nl.tudelft.pds.granula.modeller.rule.extraction;
 
+import nl.tudelft.pds.granula.archiver.source.DataStream;
 import nl.tudelft.pds.granula.archiver.source.record.Record;
 import nl.tudelft.pds.granula.modeller.rule.Rule;
 
@@ -16,6 +17,6 @@ public abstract class ExtractionRule extends Rule {
         super(level);
     }
 
-    public abstract List<Record> extractRecordFromInputStream(InputStream fis);
+    public abstract List<Record> extractRecordFromInputStream(DataStream dataStream);
 
 }

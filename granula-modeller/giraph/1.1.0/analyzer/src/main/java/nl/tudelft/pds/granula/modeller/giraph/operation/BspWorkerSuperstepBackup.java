@@ -221,7 +221,7 @@ public class BspWorkerSuperstepBackup extends ConcreteOperationModel {
                 timeSeriesVisual.setTitle("Network Utilization");
 
                 long startTime = Long.parseLong(operation.getInfo("StartTime").getValue());
-                long endTime = Long.parseLong(operation.getInfo("EndTime").getValue());
+                long endTime = Long.parseLong(operation.getInfo(GiraphType.EndTime).getValue());
                 timeSeriesVisual.setXAxis("ExecutionTime", "s", String.valueOf(startTime), String.valueOf(endTime));
 
                 List<TimeSeriesInfo> y1Infos = new ArrayList<>();

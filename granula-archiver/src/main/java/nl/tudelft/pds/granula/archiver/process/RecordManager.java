@@ -58,7 +58,7 @@ public class RecordManager {
 
 
         for (DataStream dataStream :jobSource.getOperationSource().getDataStreams()) {
-            List<Record> records = extractOperationRecord(dataStream.getInputStream());
+            List<Record> records = extractOperationRecord(dataStream);
             jobRecord.addRecords(records);
         }
 
@@ -108,10 +108,10 @@ public class RecordManager {
 
 
 
-    public List<Record> extractOperationRecord(InputStream inputStream) {
+    public List<Record> extractOperationRecord(DataStream dataStream) {
         JobModel jobModel = (JobModel) job.getModel();
         ExtractionRule extractionRule = jobModel.getExtractionRules().get(0);
-        return extractionRule.extractRecordFromInputStream(inputStream);
+        return extractionRule.extractRecordFromInputStream(dataStream);
     }
 
 

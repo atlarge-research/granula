@@ -1,5 +1,6 @@
 package nl.tudelft.pds.granula.modeller.rule.extraction;
 
+import nl.tudelft.pds.granula.archiver.source.DataStream;
 import nl.tudelft.pds.granula.archiver.source.record.Record;
 import nl.tudelft.pds.granula.archiver.source.record.RecordLocation;
 
@@ -21,19 +22,19 @@ public class GiraphExtractionRule extends ExtractionRule {
         return false;
     }
 
-    public List<Record> extractRecordFromInputStream(InputStream fis) {
+    public List<Record> extractRecordFromInputStream(DataStream dataStream) {
 
         List<Record> granulalogList = new ArrayList<>();
 
         try {
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+            BufferedReader br = new BufferedReader(new InputStreamReader(dataStream.getInputStream()));
 
             String line = null;
             int lineCount = 0;
             while ((line = br.readLine()) != null) {
                 lineCount++;
-                if(line.contains("Granular")) {
+                if(line.contains("GRANULA")) {
                     Record record = extractRecord(line);
 
                     RecordLocation trace = new RecordLocation();
@@ -52,7 +53,7 @@ public class GiraphExtractionRule extends ExtractionRule {
                         }
                     }
 
-                    String logFilePath = "unknown";
+                    String logFilePath = dataStream.getPath();
                     trace.setLocation(logFilePath, lineCount, codeLocation);
                     record.setRecordLocation(trace);
 
@@ -72,7 +73,7 @@ public class GiraphExtractionRule extends ExtractionRule {
     public Record extractRecord(String line) {
         Record record = new Record();
 
-        String granulaLog = line.split("Granular")[1];
+        String granulaLog = line.split("GRANULA")[1];
         String[] recordAttrs = granulaLog.split("\\s+");
 
         for (String recordAttr : recordAttrs) {

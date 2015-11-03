@@ -32,10 +32,10 @@ import nl.tudelft.pds.granula.modeller.giraph.GiraphType;
 
 import java.util.ArrayList;
 
-public class AppMasterUndeployment extends AbstractOperationModel {
+public class AppMasterDecommission extends AbstractOperationModel {
 
-    public AppMasterUndeployment() {
-        super(GiraphType.AppMaster, GiraphType.Undeployment);
+    public AppMasterDecommission() {
+        super(GiraphType.AppMaster, GiraphType.Decommission);
     }
 
     public void loadRules() {
@@ -61,7 +61,7 @@ public class AppMasterUndeployment extends AbstractOperationModel {
         public boolean execute() {
                 Operation operation = (Operation) entity;
                 String summary = String.format("The [%s] operation cleans up the Yarn environment after %s finishes, " +
-                        "which involves %s and %s. ",
+                        "which contains 2 child operations: %s and %s. ",
                         operation.getName(), "BspExecution", "ContainerOffload", "AppTermination");
                 summary += getBasicSummary(operation);
 

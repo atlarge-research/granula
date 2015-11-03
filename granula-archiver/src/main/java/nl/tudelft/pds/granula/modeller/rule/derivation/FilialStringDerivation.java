@@ -74,7 +74,7 @@ public class FilialStringDerivation extends DerivationRule {
 
         sources.add(new InfoSource(infoName, usedInfos));
         BasicInfo aggInfo = new BasicInfo(aggInfoName);
-        aggInfo.setDescription(String.format("[%s] is derived from child operation with mission type %s. ", aggInfoName, infoName, missionType));
+        aggInfo.setDescription(String.format("[%s] is derived from [%s] of a child operation with mission type %s. ", aggInfoName, infoName, missionType));
         aggInfo.addInfo(infoValue, sources);
         operation.addInfo(aggInfo);
 

@@ -51,8 +51,8 @@ public class BspWorkerDataOffload extends ConcreteOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            String summary = String.format("The [%s] operation offloads the output graph data to the Distributed File System in each BspWorker. " +
-                            "The exact functioning of this operation is yet unclear. ", operation.getName());
+            String summary = String.format("The [%s] operation offloads the output graph data to the Distributed File System in each BspWorker. ",
+                    operation.getName());
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

@@ -40,7 +40,7 @@ public class AppMasterContainerOffload extends AbstractOperationModel {
     public void loadRules() {
         super.loadRules();
 
-        addLinkingRule(new UniqueParentLinking(GiraphType.AppMaster, GiraphType.Undeployment));
+        addLinkingRule(new UniqueParentLinking(GiraphType.AppMaster, GiraphType.Decommission));
 
         addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
         addInfoDerivation(new SiblingEndTimeDerivation(2, GiraphType.AppMaster, GiraphType.AppTermination));

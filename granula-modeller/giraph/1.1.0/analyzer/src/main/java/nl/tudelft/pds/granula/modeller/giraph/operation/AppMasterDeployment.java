@@ -42,7 +42,7 @@ public class AppMasterDeployment extends AbstractOperationModel {
         super.loadRules();
 
         addLinkingRule(new UniqueParentLinking(GiraphType.TopActor, GiraphType.TopMission));
-        addFillingRule(new UniqueOperationFilling(3, GiraphType.AppMaster, GiraphType.ContainerLoad));
+//        addFillingRule(new UniqueOperationFilling(3, GiraphType.AppMaster, GiraphType.ContainerLoad));
         addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
         addInfoDerivation(new FilialStartTimeDerivation(3));
         addInfoDerivation(new SiblingEndTimeDerivation(5, GiraphType.AppMaster, GiraphType.BspExecution));
@@ -60,9 +60,9 @@ public class AppMasterDeployment extends AbstractOperationModel {
         @Override
         public boolean execute() {
                 Operation operation = (Operation) entity;
-                String summary = String.format("The [%s] operation set up the Yarn environment before %s starts, " +
-                            "which involves %s ,%s and %s. ",
-                    operation.getName(), "BspExecution", "AppStartup", "ContainerAssignment", "ContainerLoad");
+                String summary = String.format("The [%s] operation sets up the Yarn environment before %s starts, " +
+                            "which contains 2 child operations: %s and %s. ",
+                    operation.getName(), "BspExecution", "AppStartup", "ContainerLoad");
                 summary += getBasicSummary(operation);
 
                 SummaryInfo summaryInfo = new SummaryInfo("Summary");

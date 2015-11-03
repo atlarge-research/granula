@@ -41,19 +41,6 @@ public class AppMasterContainerAssignment extends ConcreteOperationModel {
         super.loadRules();
         addLinkingRule(new UniqueParentLinking(GiraphType.AppMaster, GiraphType.Deployment));
 
-        addInfoDerivation(new RecordInfoDerivation(1, "NumContainers"));
-        addInfoDerivation(new RecordInfoDerivation(1, "ContainerHeapSize"));
-//        addInfoDerivation(new RecordInfoDerivation(1, "ContainersLoaded"));
-        addInfoDerivation(new ColorDerivation(1, GiraphType.ColorGrey));
-        addInfoDerivation(new ParentalEndTimeDerivation(6));
-        addInfoDerivation(new DurationDerivation(7));
-        addInfoDerivation(new SummaryDerivation(10));
-        addVisualDerivation(new MainInfoTableVisualization(1,
-                new ArrayList<String>() {{
-                    add("NumContainers");
-                    add("ContainerHeapSize");
-//                    add("ContainersLoaded");
-                }}));
     }
 
     protected class SummaryDerivation extends BasicSummaryDerivation {

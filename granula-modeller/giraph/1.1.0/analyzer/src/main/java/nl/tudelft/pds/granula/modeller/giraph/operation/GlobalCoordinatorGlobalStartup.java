@@ -62,7 +62,7 @@ public class GlobalCoordinatorGlobalStartup extends AbstractOperationModel {
             String summary = String.format("The [%s] operation defines the roles of Yarn containers as either BspMaster and BspWorkers, " +
                     "includes setting up the Zookeeper, electing the BspMaster etc. " +
                     "This operation starts after the 1st container begins with Setup, " +
-                    "and ends when the last container is doen with Setup. " +
+                    "and ends when the last container is done with Setup. " +
                     "This operation contains a set of %s operations. ", operation.getName(), "Setup");
             summary += getBasicSummary(operation);
 

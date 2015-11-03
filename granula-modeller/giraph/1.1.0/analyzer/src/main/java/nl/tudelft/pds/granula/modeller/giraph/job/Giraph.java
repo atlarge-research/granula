@@ -43,7 +43,7 @@ public class Giraph extends JobModel {
 
         addOperationModel(new AppMasterDeployment());
             addOperationModel(new AppMasterAppStartup());
-            addOperationModel(new AppMasterContainerAssignment());
+            //addOperationModel(new AppMasterContainerAssignment());
             addOperationModel(new AppMasterContainerLoad());
         addOperationModel(new AppMasterBspExecution());
             addOperationModel(new BspMasterBspSetup());
@@ -73,7 +73,7 @@ public class Giraph extends JobModel {
                 addOperationModel(new BspWorkerFinalCleanup());
                     addOperationModel(new BspWorkerZookeeperOfflining());
                     addOperationModel(new BspWorkerOutputMerge());
-        addOperationModel(new AppMasterUndeployment());
+        addOperationModel(new AppMasterDecommission());
             addOperationModel(new AppMasterContainerOffload());
                 addOperationModel(new AppMasterAppTermination());
     }
@@ -112,7 +112,7 @@ public class Giraph extends JobModel {
             for (Operation operation : job.getTopOperation().getChildren()) {
                 if (operation.hasType(GiraphType.AppMaster, GiraphType.Deployment)) {
                     for (Operation suboperation : operation.getChildren()) {
-                        if (suboperation.hasType(GiraphType.AppMaster, GiraphType.ContainerAssignment)) {
+                        if (suboperation.hasType(GiraphType.AppMaster, GiraphType.ContainerLoad)) {
                             containerAssignment = suboperation;
                         }
                     }

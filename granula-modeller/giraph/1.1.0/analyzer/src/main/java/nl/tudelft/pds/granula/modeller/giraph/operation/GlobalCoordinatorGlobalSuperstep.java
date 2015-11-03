@@ -139,10 +139,8 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            String summary = String.format("The [%s] operation coordinates each Bsp superstep among BspWorkers. " +
-                            "This operation starts after the BspMaster starts superstep %s, " +
-                            "and ends when the BspMaster ends superstep %s. ",
-                    operation.getName(), operation.getMission().getId(), operation.getMission().getId());
+            String summary = String.format("The [%s] operation coordinates a superstep for BspWorkers. ",
+                    operation.getName());
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

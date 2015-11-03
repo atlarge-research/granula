@@ -53,7 +53,7 @@ public class BspWorkerZookeerpSetup extends ConcreteOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
             String summary = String.format("The [%s] operation does the initial communication with Zookeeper. " +
-                    "It is rather time consuming, and the exact purpose of this operation is yet unclear. ", operation.getName());
+                    "It can be rather time consuming, if a stand-alone zookeeper is created for each job. ", operation.getName());
             summary += getBasicSummary(operation);
 
             SummaryInfo summaryInfo = new SummaryInfo("Summary");

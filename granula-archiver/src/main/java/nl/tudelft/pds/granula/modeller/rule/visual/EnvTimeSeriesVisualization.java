@@ -75,7 +75,7 @@ public class EnvTimeSeriesVisualization extends TimeSeriesVisualization {
             try {
                 TimeSeriesInfo tsInfo = (TimeSeriesInfo) operation.getJob().getEnvironment().getNode(computeNodeName).getInfo(infoName);
                 y1Infos.add(tsInfo);
-            } catch (IllegalStateException e) {
+            } catch (Exception e) {
                 System.out.println(String.format("Cannot find %s at %s.", infoName, computeNodeName));
             }
         }
@@ -96,7 +96,7 @@ public class EnvTimeSeriesVisualization extends TimeSeriesVisualization {
             try {
                 TimeSeriesInfo tsInfo = (TimeSeriesInfo) operation.getJob().getEnvironment().getNode(computeNodeName).getInfo(infoName);
                 y2Infos.add(tsInfo);
-            } catch (IllegalStateException e) {
+            } catch (Exception e) {
                 System.out.println(String.format("Cannot find %s at %s.", infoName, computeNodeName));
             }
         }

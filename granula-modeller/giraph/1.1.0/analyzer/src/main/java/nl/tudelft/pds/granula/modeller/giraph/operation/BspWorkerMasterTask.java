@@ -70,6 +70,7 @@ public class BspWorkerMasterTask extends ConcreteOperationModel {
         addInfoDerivation(new FilialLongAggregationDerivation(5, GiraphType.GlobalSuperstep, "SyncOverhead", "SyncOverhead"));
 //        addInfoDerivation(new FilialLongMaxDerivation(4, GiraphType.GlobalSuperstep, "MaxReceivedMsgVolume", "MaxReceivedMsgVolume"));
 
+        addInfoDerivation(new SummaryDerivation(10));
 
         addVisualDerivation(new MainInfoTableVisualization(1,
                 new ArrayList<String>() {{
@@ -152,94 +153,23 @@ public class BspWorkerMasterTask extends ConcreteOperationModel {
         }
     }
 
-    protected class SuperstepStatsVisualization extends VisualizationRule {
 
-        public SuperstepStatsVisualization(int level) {
-            super(level);
-        }
+    protected class SummaryDerivation extends BasicSummaryDerivation {
+
+        public SummaryDerivation(int level) { super(level); }
 
         @Override
         public boolean execute() {
             Operation operation = (Operation) entity;
-            boolean succeed = true;
+            String summary = String.format("The [%s] operation is executed by the BspMaster " +
+                    "and is responsible for globally coordinating supersteps for BspWorkers.", operation.getName());
+            summary += getBasicSummary(operation);
 
-            TimeSeriesVisual timeSeriesVisual = new TimeSeriesVisual("NetworkUtilVisual");
-
-            timeSeriesVisual.setTitle("Network Utilization");
-
-            long startTime = Long.parseLong(operation.getInfo("StartTime").getValue());
-            long endTime = Long.parseLong(operation.getInfo("EndTime").getValue());
-            timeSeriesVisual.setXAxis("ExecutionTime", "s", String.valueOf(startTime), String.valueOf(endTime));
-
-            List<TimeSeriesInfo> y1Infos = new ArrayList<>();
-            TimeSeriesInfo pktsIn = (TimeSeriesInfo) operation.getInfo("pkts_in");
-            TimeSeriesInfo pktsOut = (TimeSeriesInfo) operation.getInfo("pkts_out");
-            y1Infos.add(pktsIn);
-            y1Infos.add(pktsOut);
-            double y1Min = getMin(y1Infos);
-            double y1Max = getMax(y1Infos);
-            double y1Padding = (y1Max - y1Min) / 10.0;
-            timeSeriesVisual.setY1Axis("Num. Packages", "", String.valueOf(y1Min - y1Padding), String.valueOf(y1Max + y1Padding));
-            for (TimeSeriesInfo y1Info : y1Infos) {
-                timeSeriesVisual.addTimeSeriesInfoToY1(y1Info);
-            }
-
-            List<TimeSeriesInfo> y2Infos = new ArrayList<>();
-            TimeSeriesInfo bytesIn = (TimeSeriesInfo) operation.getInfo("bytes_in");
-            TimeSeriesInfo bytesOut = (TimeSeriesInfo) operation.getInfo("bytes_out");
-            y2Infos.add(bytesIn);
-            y2Infos.add(bytesOut);
-            double y2Min = getMin(y2Infos);
-            double y2Max = getMax(y2Infos);
-            double y2Padding = (y2Max - y2Min) / 10.0;
-            timeSeriesVisual.setY2Axis("Package Volume", "", String.valueOf(y2Min - y2Padding), String.valueOf(y2Max + y2Padding));
-            for (TimeSeriesInfo y2Info : y2Infos) {
-                timeSeriesVisual.addTimeSeriesInfoToY2(y2Info);
-            }
-
-            operation.addVisual(timeSeriesVisual);
-
-            return succeed;
-        }
-
-        public double getMax(List<TimeSeriesInfo> timeSeriesInfos) {
-            List<Double> pMaxValues = new ArrayList<>();
-            double finalMaxValue = Double.MIN_VALUE;
-
-            for (TimeSeriesInfo timeSeriesInfo : timeSeriesInfos) {
-                if(!timeSeriesInfo.getTimeSeries().empty()) {
-                    pMaxValues.add(timeSeriesInfo.getTimeSeries().maxValue());
-                }
-            }
-
-            if(pMaxValues.size() != 0) {
-                for (Double pMaxValue : pMaxValues) {
-                    finalMaxValue = Math.max(pMaxValue, finalMaxValue);
-                }
-                return finalMaxValue;
-            } else {
-                return 10;
-            }
-        }
-
-        public double getMin(List<TimeSeriesInfo> timeSeriesInfos) {
-            List<Double> pMinValues = new ArrayList<>();
-            double finalMinValue = Double.MAX_VALUE;
-
-            for (TimeSeriesInfo timeSeriesInfo : timeSeriesInfos) {
-                if(!timeSeriesInfo.getTimeSeries().empty()) {
-                    pMinValues.add(timeSeriesInfo.getTimeSeries().minValue());
-                }
-            }
-
-            if(pMinValues.size() != 0) {
-                for (Double pMinValue : pMinValues) {
-                    finalMinValue = Math.min(pMinValue, finalMinValue);
-                }
-                return finalMinValue;
-            } else {
-                return -10;
-            }
+            SummaryInfo summaryInfo = new SummaryInfo("Summary");
+            summaryInfo.setValue("A Summary");
+            summaryInfo.addSummary(summary, new ArrayList<Source>());
+            operation.addInfo(summaryInfo);
+            return  true;
         }
     }
 
