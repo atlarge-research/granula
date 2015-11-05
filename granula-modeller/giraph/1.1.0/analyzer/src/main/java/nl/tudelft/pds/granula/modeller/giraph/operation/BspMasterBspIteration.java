@@ -44,6 +44,7 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
 
         addInfoDerivation(new RecordInfoDerivation(1, "ComputationClass"));
         addInfoDerivation(new RecordInfoDerivation(1, "DataInputPath"));
+        addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "SyncOverhead"));
         addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "AvgVertices"));
         addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "AvgEdges"));
         addInfoDerivation(new FilialStringDerivation(6, GiraphType.MasterTask, "NumSuperstep"));
@@ -55,6 +56,7 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
                     add("AvgVertices");
                     add("AvgEdges");
                     add("NumSuperstep");
+                    add("SyncOverhead");
                 }}));
 
     }
@@ -82,3 +84,4 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
 
 
 }
+
