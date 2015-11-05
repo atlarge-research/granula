@@ -48,8 +48,8 @@ public class GiraphExtractionRule extends ExtractionRule {
                         }
                     } else {
                         String[] driverLineParts = line.split("\\s+");
-                        if(driverLineParts.length > 3) {
-                            codeLocation = driverLineParts[3].replace(":", "");
+                        if(driverLineParts.length > 4) {
+                            codeLocation = driverLineParts[4].replace(":", "");
                         }
                     }
 
