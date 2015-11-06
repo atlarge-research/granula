@@ -61,7 +61,7 @@ public class RrdManager {
                 String lineValues[] = line.split("\\s+");
                 if(!(lineValues[1].equals("nan") || lineValues[1].equals("NaN"))) {
                     long timestamp = Long.parseLong(lineValues[0].replace(":", ""));
-                    double value = Double.parseDouble(lineValues[1]);
+                    double value = quick_fix_mem(dataStream, Double.parseDouble(lineValues[1]));
                     timeSeries.addDatapoint(timestamp * 1000, value);
                 }
             }
@@ -71,5 +71,12 @@ public class RrdManager {
             e.printStackTrace();
             throw new IllegalStateException();
         }
+    }
+
+    public static double quick_fix_mem(DataStream dataStream, double value) {
+        if(dataStream.getPath().contains("mem_")) {
+            return value * 1000;
+        } else
+            return value;
     }
 }
