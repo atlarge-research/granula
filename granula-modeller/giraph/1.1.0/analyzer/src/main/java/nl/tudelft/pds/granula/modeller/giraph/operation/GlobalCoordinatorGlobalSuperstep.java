@@ -89,32 +89,39 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
         public boolean execute() {
             Operation operation = (Operation) entity;
 
-            List<Info> computationDurationInfos = new ArrayList<>();
+            List<Info> computeDurationInfos = new ArrayList<>();
+            List<Info> messageDurationInfos = new ArrayList<>();
+
+            List<Long> computeMessageDuration = new ArrayList<>();
 
 
             for (Operation sibOperation : operation.getParent().findSiblingOperations(GiraphType.WorkerTask)) {
-                for (Operation subOperation : sibOperation.getChildren()) {
-                    if(subOperation.getMission().hasType(GiraphType.Superstep)) {
+                for (Operation subOperation : sibOperation.findSuboperations(GiraphType.Superstep)) {
                         if(subOperation.getMission().getId().equals(operation.getMission().getId())) {
-                            for (Operation computationOperation : subOperation.findSuboperations(GiraphType.Computation)) {
-                                computationDurationInfos.add(computationOperation.getInfo("Duration"));
-                            }
+
+                            Info computeDurationInfo = subOperation.findSuboperation(GiraphType.Computation).getInfo("Duration");
+                            computeDurationInfos.add(computeDurationInfo);
+
+                            Info msgDurationInfo = subOperation.findSuboperation(GiraphType.MsgSend).getInfo("Duration");
+                            messageDurationInfos.add(msgDurationInfo);
+
+                            computeMessageDuration.add(Long.parseLong(computeDurationInfo.getValue()) + Long.parseLong(msgDurationInfo.getValue()));
                         }
-                    }
                 }
 
             }
 
             List<Source> sources = new ArrayList<>();
-            sources.add(new InfoSource("ComputationDuration", computationDurationInfos));
+            sources.add(new InfoSource("ComputationDuration", computeDurationInfos));
+            sources.add(new InfoSource("MessageDuration", messageDurationInfos));
 
             BasicInfo syncOverheadInfo = new BasicInfo("SyncOverhead");
 
             long max = Long.MIN_VALUE;
             long total = 0;
-            long numWorkers = computationDurationInfos.size();
-            for (Info compDurationInfo : computationDurationInfos) {
-                long duration = Long.parseLong(compDurationInfo.getValue());
+            long numWorkers = computeDurationInfos.size();
+            for (Long computeMsgDuration : computeMessageDuration) {
+                long duration = computeMsgDuration;
                 max = Math.max(duration, max);
                 total += duration;
             }
@@ -124,9 +131,9 @@ public class GlobalCoordinatorGlobalSuperstep extends ConcreteOperationModel {
 
             syncOverheadInfo.addInfo(String.valueOf(syncOverhead), sources);
             syncOverheadInfo.setDescription(String.format("[%s] is the difference between the maximum and the average [Duration] of " +
-                    "all Computation sub-operations. The intuition here is that the average [Duration] represents the optimal scenario, " +
+                    "all Computation+MsgSend sub-operations. The intuition here is that the average [Duration] represents the optimal scenario, " +
                     "in which partitions are distributed in perfect balance. " +
-                    "The extra time needed til the last Computation is done are therefore synchronization overhead. ", syncOverheadInfo.getName()));
+                    "The extra time needed til the last Computation+MsgSend is done is thus the synchronization overhead. ", syncOverheadInfo.getName()));
             operation.addInfo(syncOverheadInfo);
             return  true;
         }

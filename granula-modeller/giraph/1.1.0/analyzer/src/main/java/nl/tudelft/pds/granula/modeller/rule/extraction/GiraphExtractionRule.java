@@ -38,19 +38,17 @@ public class GiraphExtractionRule extends ExtractionRule {
                     Record record = extractRecord(line);
 
                     RecordLocation trace = new RecordLocation();
-                    String codeLocation = "";
+                    String codeLocation = "unspecified";
 
-                    String[] lineParts = line.split("\\) - Granular");
+                    String[] lineParts = line.split("GRANULA");
                     if(lineParts.length > 1) {
-                        String[] prefixParts = lineParts[0].split(" \\(");
-                        if(prefixParts.length > 1) {
-                            codeLocation = prefixParts[1];
+                        String[] prefixParts = lineParts[0].split("\\s+");
+                        if(dataStream.getPath().contains("driver")) {
+                            codeLocation = prefixParts[prefixParts.length - 2] + " " + prefixParts[prefixParts.length - 1];
+                        } else if(dataStream.getPath().contains("yarn")) {
+                            codeLocation = prefixParts[prefixParts.length - 1].replace(":", "");
                         }
-                    } else {
-                        String[] driverLineParts = line.split("\\s+");
-                        if(driverLineParts.length > 4) {
-                            codeLocation = driverLineParts[4].replace(":", "");
-                        }
+
                     }
 
                     String logFilePath = dataStream.getPath();

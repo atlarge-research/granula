@@ -84,4 +84,3 @@ public class BspMasterBspIteration extends ConcreteOperationModel {
 
 
 }
-
