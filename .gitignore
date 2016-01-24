@@ -2,3 +2,5 @@
 *.iml
 /exp
 /.idea
+
+/data

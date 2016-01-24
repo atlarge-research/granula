@@ -18,5 +18,5 @@ package nl.tudelft.pds.granula;
 
 public class Configuration {
     public static boolean ExportDescription = true;
-    public static String repoPath = "/home/wlngai/Workstation/Dropbox/Repo/granula";
+    public static String repoPath = "/home/wlngai/Workstation/Repo/tudelft-atlarge/granula";
 }
