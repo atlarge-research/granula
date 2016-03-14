@@ -1,0 +1,27 @@
+2015-11-06 13:51:09,669 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2015-11-06 13:51:09,708 [main] INFO [GiraphJob (run(202))] GRANULA InfoName:StartTime InfoValue:1446814269708 Timestamp:1446814269708 RecordUuid:8310190040780844506 OperationUuid:8535800988670875598 ActorType:AppMaster ActorId:Id.Unique MissionType:AppStartup MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:51:09,709 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapreduce.job.counters.limit is deprecated. Instead, use mapreduce.job.counters.max
+2015-11-06 13:51:09,734 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.job.map.memory.mb is deprecated. Instead, use mapreduce.map.memory.mb
+2015-11-06 13:51:09,734 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.job.reduce.memory.mb is deprecated. Instead, use mapreduce.reduce.memory.mb
+2015-11-06 13:51:09,735 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.map.tasks.speculative.execution is deprecated. Instead, use mapreduce.map.speculative
+2015-11-06 13:51:09,735 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapreduce.user.classpath.first is deprecated. Instead, use mapreduce.job.user.classpath.first
+2015-11-06 13:51:09,735 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.map.max.attempts is deprecated. Instead, use mapreduce.map.maxattempts
+2015-11-06 13:51:09,735 [main] INFO [GiraphJob (run(231))] run: Since checkpointing is disabled (default), do not allow any task retries (setting mapred.map.max.attempts = 0, old value = 4)
+2015-11-06 13:51:09,770 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2015-11-06 13:51:09,777 [main] INFO [GiraphJob (run(262))] GRANULA InfoName:EndTime InfoValue:1446814269776 Timestamp:1446814269776 RecordUuid:5515088333411180695 OperationUuid:8535800988670875598 ActorType:AppMaster ActorId:Id.Unique MissionType:AppStartup MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:51:09,778 [main] INFO [GiraphJob (run(263))] GRANULA InfoName:StartTime InfoValue:1446814269777 Timestamp:1446814269777 RecordUuid:9049464695998182067 OperationUuid:5553551294213601352 ActorType:AppMaster ActorId:Id.Unique MissionType:ContainerLoad MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:51:09,840 [main] INFO [RMProxy (createRMProxy(92))] Connecting to ResourceManager at /10.149.0.2:8032
+2015-11-06 13:51:10,688 [main] INFO [JobSubmitter (submitJobInternal(396))] number of splits:21
+2015-11-06 13:51:10,708 [main] INFO [deprecation (warnOnceIfDeprecated(1019))] mapred.job.tracker is deprecated. Instead, use mapreduce.jobtracker.address
+2015-11-06 13:51:10,830 [main] INFO [JobSubmitter (printTokens(479))] Submitting tokens for job: job_1446814166357_0001
+2015-11-06 13:51:11,165 [main] INFO [YarnClientImpl (submitApplication(236))] Submitted application application_1446814166357_0001
+2015-11-06 13:51:11,204 [main] INFO [Job (submit(1289))] The url to track the job: http://node002.ib.cluster:8088/proxy/application_1446814166357_0001/
+2015-11-06 13:51:11,205 [main] INFO [GiraphJob (run(269))] Tracking URL: http://node002.ib.cluster:8088/proxy/application_1446814166357_0001/
+2015-11-06 13:51:11,205 [main] INFO [GiraphJob (run(270))] Waiting for resources... Job will start only when it gets all 21 mappers
+2015-11-06 13:51:29,414 [main] INFO [HaltApplicationUtils$DefaultHaltInstructionsWriter (writeHaltInstructions(79))] writeHaltInstructions: To halt after next superstep execute: 'bin/halt-application --zkServer 10.149.0.2:2181 --zkNode /_hadoopBsp/job_1446814166357_0001/_haltComputation'
+2015-11-06 13:51:29,415 [main] INFO [GiraphJob (run(276))] GRANULA InfoName:NumContainers InfoValue:20 Timestamp:1446814289415 RecordUuid:7692243860397818838 OperationUuid:5553551294213601352 ActorType:AppMaster ActorId:Id.Unique MissionType:ContainerLoad MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:51:29,416 [main] INFO [GiraphJob (run(278))] GRANULA InfoName:ContainerHeapSize InfoValue:15480 Timestamp:1446814289415 RecordUuid:8396640045795379490 OperationUuid:5553551294213601352 ActorType:AppMaster ActorId:Id.Unique MissionType:ContainerLoad MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:51:29,416 [main] INFO [GiraphJob (run(279))] GRANULA InfoName:EndTime InfoValue:1446814289416 Timestamp:1446814289416 RecordUuid:7199362605384920576 OperationUuid:5553551294213601352 ActorType:AppMaster ActorId:Id.Unique MissionType:ContainerLoad MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:53:04,471 [main] INFO [GiraphJob (run(288))] GRANULA InfoName:StartTime InfoValue:1446814384471 Timestamp:1446814384471 RecordUuid:5170163265014403751 OperationUuid:8931729592178943178 ActorType:AppMaster ActorId:Id.Unique MissionType:AppTermination MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:53:04,472 [main] INFO [GiraphJob (run(299))] GRANULA InfoName:EndTime InfoValue:1446814384471 Timestamp:1446814384471 RecordUuid:4796274967859900045 OperationUuid:8931729592178943178 ActorType:AppMaster ActorId:Id.Unique MissionType:AppTermination MissionId:Id.Unique ParentDescriptor:UniqueParent
+2015-11-06 13:53:24,511 [main] INFO [RMProxy (createRMProxy(92))] Connecting to ResourceManager at /10.149.0.2:8032
