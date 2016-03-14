@@ -1,0 +1,1173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+
+    Copyright 2015 Delft University of Technology
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-type" />
+    <title>Graphalytics Benchmark Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap/css/carousel.css" rel="stylesheet" />
+    <link href="lib/graphalytics/css/report.css" rel="stylesheet" />
+</head>
+
+<body>
+
+<div class="navbar-wrapper" id="nav-container">
+    <div class="container">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="https://github.com/tudelft-atlarge/graphalytics/" shape="rect">Graphalytics Benchmark Report</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="text-center"><h1 class="page-header">Overview of Benchmark Results</h1></div>
+
+    <h3 class="page-header">Runtime Report</h3>
+
+    <p>An overview of the measured runtimes for execution of each combination of graph and algorithm.</p>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th rowspan="1" colspan="1"></th>
+            <th rowspan="1" colspan="1">BFS</th>
+            <th rowspan="1" colspan="1">PR</th>
+            
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td rowspan="1" colspan="1">ldbc-1000 (3 599 905 vertices, 447 163 916 edges)</td>
+              
+            <td rowspan="1" colspan="1">
+                <a href="./lib/granula-visualizer/visualizer.htm?arc=../../data/archive/6001451136726896701.xml" shape="rect">67.1 s</a>
+            </td>
+            
+             
+              
+            <td rowspan="1" colspan="1">
+                <a href="./lib/granula-visualizer/visualizer.htm?arc=../../data/archive/8645044886915975583.xml" shape="rect">114.9 s</a>
+            </td>
+            
+              
+        </tr>
+        </tbody>
+    </table>
+
+    <h3 class="page-header">Edges per Second</h3>
+
+    <p>
+        An overview of the throughput measured in edges per second for execution of each combination of graph and algorithm.
+        Computed as the number of edges in a graph divided by the runtime.
+    </p>
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th rowspan="1" colspan="1"></th>
+            <th rowspan="1" colspan="1">BFS</th>
+            <th rowspan="1" colspan="1">PR</th>
+            
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td rowspan="1" colspan="1">ldbc-1000 (3 599 905 vertices, 447 163 916 edges)</td>
+              
+            <td class="text-right" rowspan="1" colspan="1">6668812.97</td>
+            
+             
+              
+            <td class="text-right" rowspan="1" colspan="1">3892104.76</td>
+            
+              
+        </tr>
+        </tbody>
+    </table>
+
+
+    <div class="page-header">
+        <h3 class="pull-left">Benchmark Configuration</h3>
+        <div class="pull-right" style="position:relative;top:30px;">
+          <a href="#" data-toggle="collapse" data-target="#benchmark-conf" aria-expanded="true" class="" shape="rect">Expand</a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div id="benchmark-conf" class="panel-collapse collapse out" aria-expanded="true">
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th rowspan="1" colspan="1">Property</th>
+            <th rowspan="1" colspan="1">Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td rowspan="1" colspan="1">benchmark.run.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">benchmark.run.graphs</td>
+            <td rowspan="1" colspan="1">ldbc-1000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">benchmark.run.name</td>
+            <td rowspan="1" colspan="1">Evo &amp; BFS on Graph-1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">99843</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">21</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.edge-file</td>
+            <td rowspan="1" colspan="1">amazon0302.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.evo.max-id</td>
+            <td rowspan="1" colspan="1">262110</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">262</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.meta.edges</td>
+            <td rowspan="1" colspan="1">1234877</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.meta.vertices</td>
+            <td rowspan="1" colspan="1">262111</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">67</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.amazon0302.vertex-file</td>
+            <td rowspan="1" colspan="1">amazon0302.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">4949326</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">21</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.edge-file</td>
+            <td rowspan="1" colspan="1">cit-Patents.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.evo.max-id</td>
+            <td rowspan="1" colspan="1">6009554</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">3775</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.meta.edges</td>
+            <td rowspan="1" colspan="1">16518948</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.meta.vertices</td>
+            <td rowspan="1" colspan="1">3774768</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.cit-Patents.vertex-file</td>
+            <td rowspan="1" colspan="1">cit-Patents.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">101</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">21</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.directed</td>
+            <td rowspan="1" colspan="1">false</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.edge-file</td>
+            <td rowspan="1" colspan="1">com-friendster.ungraph.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.evo.max-id</td>
+            <td rowspan="1" colspan="1">124836179</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">65608</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.meta.edges</td>
+            <td rowspan="1" colspan="1">1806067135</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.meta.vertices</td>
+            <td rowspan="1" colspan="1">65608366</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.com-friendster.vertex-file</td>
+            <td rowspan="1" colspan="1">com-friendster.ungraph.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">0</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.directed</td>
+            <td rowspan="1" colspan="1">false</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.edge-based</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.edge-file</td>
+            <td rowspan="1" colspan="1">graph500-scale-23.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.evo.max-id</td>
+            <td rowspan="1" colspan="1">8388607</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">838</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.meta.edges</td>
+            <td rowspan="1" colspan="1">129333677</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.meta.vertices</td>
+            <td rowspan="1" colspan="1">4610222</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.graph500-scale-23.vertex-file</td>
+            <td rowspan="1" colspan="1">graph500-scale-23.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">239044</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">21</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.directed</td>
+            <td rowspan="1" colspan="1">false</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.edge-file</td>
+            <td rowspan="1" colspan="1">kgs.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.evo.max-id</td>
+            <td rowspan="1" colspan="1">832246</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.meta.edges</td>
+            <td rowspan="1" colspan="1">17891698</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.meta.vertices</td>
+            <td rowspan="1" colspan="1">832247</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.kgs.vertex-file</td>
+            <td rowspan="1" colspan="1">kgs.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-1.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.meta.edges</td>
+            <td rowspan="1" colspan="1">452622</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.meta.vertices</td>
+            <td rowspan="1" colspan="1">10999</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-1.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-10.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.meta.edges</td>
+            <td rowspan="1" colspan="1">4654416</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.meta.vertices</td>
+            <td rowspan="1" colspan="1">72994</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">24</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-10.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-10.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-100.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.meta.edges</td>
+            <td rowspan="1" colspan="1">46598276</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.meta.vertices</td>
+            <td rowspan="1" colspan="1">498989</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-100.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-100.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-1000.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.meta.edges</td>
+            <td rowspan="1" colspan="1">447163916</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.meta.vertices</td>
+            <td rowspan="1" colspan="1">3599905</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-1000.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-1000.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-3.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.meta.edges</td>
+            <td rowspan="1" colspan="1">1370174</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.meta.vertices</td>
+            <td rowspan="1" colspan="1">27000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-3.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-3.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-30.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.meta.edges</td>
+            <td rowspan="1" colspan="1">14212356</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.meta.vertices</td>
+            <td rowspan="1" colspan="1">183996</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-30.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-30.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">12094627913375</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.edge-file</td>
+            <td rowspan="1" colspan="1">ldbc-300.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.evo.max-id</td>
+            <td rowspan="1" colspan="1">2000000000000000</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.meta.edges</td>
+            <td rowspan="1" colspan="1">136219368</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.meta.vertices</td>
+            <td rowspan="1" colspan="1">1253978</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.ldbc-300.vertex-file</td>
+            <td rowspan="1" colspan="1">ldbc-300.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">5963</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.edge-file</td>
+            <td rowspan="1" colspan="1">twitter_mpi.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.evo.max-id</td>
+            <td rowspan="1" colspan="1">52579682</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">100</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.meta.edges</td>
+            <td rowspan="1" colspan="1">1963263821</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.meta.vertices</td>
+            <td rowspan="1" colspan="1">52579682</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.twitter_mpi.vertex-file</td>
+            <td rowspan="1" colspan="1">twitter_mpi.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.algorithms</td>
+            <td rowspan="1" colspan="1">bfs</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.bfs.source-vertex</td>
+            <td rowspan="1" colspan="1">2</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.cd.hop-attenuation</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.cd.max-iterations</td>
+            <td rowspan="1" colspan="1">17</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.cd.node-preference</td>
+            <td rowspan="1" colspan="1">0.1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.directed</td>
+            <td rowspan="1" colspan="1">true</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.edge-file</td>
+            <td rowspan="1" colspan="1">wiki-Talk.e</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.evo.max-id</td>
+            <td rowspan="1" colspan="1">2394384</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.evo.max-iterations</td>
+            <td rowspan="1" colspan="1">6</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.evo.new-vertices</td>
+            <td rowspan="1" colspan="1">2394</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.evo.pratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.evo.rratio</td>
+            <td rowspan="1" colspan="1">0.5</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.meta.edges</td>
+            <td rowspan="1" colspan="1">5021410</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.meta.vertices</td>
+            <td rowspan="1" colspan="1">2394385</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.pr.damping-factor</td>
+            <td rowspan="1" colspan="1">0.85</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.pr.num-iterations</td>
+            <td rowspan="1" colspan="1">10</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graph.wiki-Talk.vertex-file</td>
+            <td rowspan="1" colspan="1">wiki-Talk.v</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graphs.names</td>
+            <td rowspan="1" colspan="1">ldbc-1</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">graphs.root-directory</td>
+            <td rowspan="1" colspan="1">/var/scratch/wlngai/source/data</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div class="page-header">
+        <h3 class="pull-left">Platform Configuration</h3>
+        <div class="pull-right" style="position:relative;top:30px;">
+          <a href="#" data-toggle="collapse" data-target="#platform-conf" aria-expanded="true" class="" shape="rect">Expand</a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+    <div id="platform-conf" class="panel-collapse collapse out" aria-expanded="true">
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+        <tr>
+            <th rowspan="1" colspan="1">Property</th>
+            <th rowspan="1" colspan="1">Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td rowspan="1" colspan="1">giraph.job.heap-size</td>
+            <td rowspan="1" colspan="1">14980</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">giraph.job.memory-size</td>
+            <td rowspan="1" colspan="1">15480</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">giraph.job.worker-count</td>
+            <td rowspan="1" colspan="1">20</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">giraph.zoo-keeper-address</td>
+            <td rowspan="1" colspan="1">10.149.0.2:2181</td>
+        </tr>
+        <tr>
+            <td rowspan="1" colspan="1">hadoop.home</td>
+            <td rowspan="1" colspan="1">/local/wlngai/yarn</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; Parallel and Distributed Systems, Delft University of Technology</p>
+    </footer>
+</div>
+<!-- /container -->
+
+<script src="lib/bootstrap/js/jquery.js" xml:space="preserve"></script>
+<script src="lib/bootstrap/js/bootstrap.min.js" xml:space="preserve"></script>
+
+</body>
+
+</html>
