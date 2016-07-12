@@ -1,0 +1,102 @@
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+
+/*.dark {*/
+     /*background-color: #333;*/
+     /*border-color: #333;*/
+     /*color: #c4e3f3;*/
+ /*}*/
+
+.dark {
+    background-color: #777;
+    border-color: #777;
+    color: #eee;
+}
+
+
+.vcenter {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.job-card {
+    border: 3px solid #777;
+}
+
+.justify {
+    text-align:justify;
+}
+
+a, a:active, a:focus {
+    outline: none;
+}
+
+th {
+    text-align:center;
+}
+
+.borderless {
+    border-width: 0;
+}
+
+.job-border {
+    border-radius: 0.01rem !important
+}
+
+.progress {
+    height: 25px !important;
+    margin: 0px;
+}
+
+#operation-chart {
+    margin: 0 !important
+}
+
+svg {
+    margin: 0 !important;
+}
+
+
+/*.nv-series:nth-child(1){ transform: translate(-100px, -100px); }*/
+/*.nv-series:nth-child(2){ transform: translate(0, 20px); }*/
+/*.nv-series:nth-child(3){ transform: translate(0, 40px); }*/
+/*.nv-series:nth-child(4){ transform: translate(200px, 60px); }*/
+/*.nv-series:nth-child(5){ transform: translate(0, 80px); }*/
+/*.nv-series:nth-child(6){ transform: translate(0, 100px); }*/
+/*.nv-series:nth-child(7){ transform: translate(200px, 120px); }*/
+
+p.link {
+    word-wrap: break-word;
+}
+
+.error-card {
+    color: gray;
+    min-height:200px !important;
+}
+
+.error-card p {
+    position: relative;
+    transform: translateY(100px);
+}
+
+
+a:link {
+    color: gray !important;
+}
+
+a:visited {
+    color: gray !important;
+}
+a:hover {
+    color: gray !important;
+}
+a:active {
+    color: gray !important;
+}
+
+.label {
+    color: gray !important;
+}
