@@ -1,0 +1,10 @@
+/target
+*.iml
+/exp
+/.idea
+
+/data
+**/target
+**/.idea
+**/.iml
+
